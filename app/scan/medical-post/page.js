@@ -1,18 +1,82 @@
+'use client';
+
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { Stethoscope, MapPin, Clock, Activity, Phone, ArrowLeft, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-export const metadata = {
-  title: 'Medical Post — ContextQR | FIFA World Cup 2026',
-  description: 'Emergency and medical assistance for stadium visitors. Symptom triage, nearest medic, and immediate guidance.',
-};
-
-/**
- * Medical-post scan page — shell layout
- * Full symptom triage form will be implemented in Day 3.
- */
 export default function MedicalPostScanPage() {
+  const [scanData, setScanData] = useState(null);
+  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+  const [triageResult, setTriageResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const symptomsList = [
+    'Chest pain',
+    'Breathing difficulty',
+    'Dizziness',
+    'Minor cut',
+    'Headache',
+    'Allergic reaction'
+  ];
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('scan-result-medical-post');
+    if (stored) {
+      setScanData(JSON.parse(stored));
+    }
+  }, []);
+
+  const handleCheckboxChange = (symptom) => {
+    setSelectedSymptoms((prev) => 
+      prev.includes(symptom) ? prev.filter((s) => s !== symptom) : [...prev, symptom]
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (selectedSymptoms.length === 0) {
+      setError('Please select at least one symptom.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/medical-triage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symptoms: selectedSymptoms }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch triage result');
+      }
+
+      const data = await res.json();
+      setTriageResult(data);
+    } catch (err) {
+      setError(err.message || 'An error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getResultStyle = (severity) => {
+    switch (severity) {
+      case 'urgent':
+        return { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', color: '#ef4444' };
+      case 'moderate':
+        return { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)', color: '#f59e0b' };
+      case 'self-care':
+        return { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)', color: '#10b981' };
+      default:
+        return { bg: 'var(--bg-surface)', border: 'var(--border)', color: 'var(--text-primary)' };
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
@@ -85,13 +149,13 @@ export default function MedicalPostScanPage() {
             <div>
               <div style={{ marginBottom: '8px' }}>
                 <span className="badge badge-warning" style={{ marginRight: '8px' }}>Zone: Medical Post</span>
-                <span className="badge badge-success">Staff: Available</span>
+                <span className="badge badge-success">Staff: {scanData ? scanData.postInfo.availability : 'Loading...'}</span>
               </div>
               <h1 id="medical-page-heading" style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '8px' }}>
                 Medical Assistance
               </h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                You've scanned at a ContextQR medical post. Complete the symptom check below for immediate guidance.
+                You've scanned at {scanData ? scanData.postInfo.name : 'a ContextQR medical post'}. Complete the symptom check below for immediate guidance.
               </p>
             </div>
           </div>
@@ -107,9 +171,9 @@ export default function MedicalPostScanPage() {
               style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}
             >
               {[
-                { icon: MapPin,    label: 'Location',     value: 'North Concourse', accent: '#f59e0b' },
-                { icon: Clock,     label: 'Wait Time',    value: '~3 minutes',      accent: '#10b981' },
-                { icon: Activity,  label: 'Status',       value: '● Available',     accent: '#10b981' },
+                { icon: MapPin,    label: 'Location',     value: scanData ? scanData.zoneData.name : '...', accent: '#f59e0b' },
+                { icon: Clock,     label: 'Wait Time',    value: scanData ? `~${scanData.postInfo.waitMinutes} mins` : '...',      accent: '#10b981' },
+                { icon: Activity,  label: 'Status',       value: scanData ? scanData.postInfo.availability : '...',     accent: '#10b981' },
                 { icon: Phone,     label: 'Direct Line',  value: '+1-800-MEDIC-1',  accent: '#3b82f6' },
               ].map(({ icon: Icon, label, value, accent }) => (
                 <div
@@ -132,43 +196,87 @@ export default function MedicalPostScanPage() {
             </div>
           </section>
 
-          {/* Triage form placeholder */}
+          {/* Triage form */}
           <section aria-labelledby="triage-heading">
             <h2 id="triage-heading" style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>
               Quick Symptom Check
             </h2>
-            <div
-              className="card"
-              aria-label="Symptom triage form — loading"
-              aria-live="polite"
-              aria-busy="true"
-              style={{ padding: '40px', textAlign: 'center' }}
-            >
-              <div
-                aria-hidden="true"
-                style={{
-                  width: '56px', height: '56px',
-                  background: 'rgba(245,158,11,0.1)',
-                  border: '2px solid rgba(245,158,11,0.2)',
-                  borderRadius: '16px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 20px',
-                }}
-              >
-                <Stethoscope size={28} style={{ color: '#f59e0b' }} />
-              </div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px' }}>Symptom Triage Form</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6, maxWidth: '380px', margin: '0 auto 24px' }}>
-                Select your symptoms → get an instant severity assessment → nearest available medic.
-              </p>
-              <div aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                <div className="skeleton" style={{ height: '44px', borderRadius: '10px' }} />
-                <div className="skeleton" style={{ height: '44px', borderRadius: '10px' }} />
-                <div className="skeleton" style={{ height: '44px', borderRadius: '10px' }} />
-              </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                🔧 Triage form wiring in progress — Day 3 task
-              </p>
+            <div className="card" style={{ padding: '40px' }}>
+              
+              {!triageResult ? (
+                <form onSubmit={handleSubmit}>
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      width: '56px', height: '56px',
+                      background: 'rgba(245,158,11,0.1)',
+                      border: '2px solid rgba(245,158,11,0.2)',
+                      borderRadius: '16px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      margin: '0 auto 20px',
+                    }}
+                  >
+                    <Stethoscope size={28} style={{ color: '#f59e0b' }} />
+                  </div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px', textAlign: 'center' }}>Symptom Triage Form</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6, maxWidth: '380px', margin: '0 auto 24px', textAlign: 'center' }}>
+                    Select your symptoms → get an instant severity assessment → nearest available medic.
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+                    {symptomsList.map((symptom) => (
+                      <label key={symptom} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '12px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                        <input 
+                          type="checkbox" 
+                          value={symptom} 
+                          checked={selectedSymptoms.includes(symptom)}
+                          onChange={() => handleCheckboxChange(symptom)}
+                          style={{ width: '18px', height: '18px', accentColor: 'var(--accent)' }}
+                        />
+                        <span style={{ fontSize: '0.95rem' }}>{symptom}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {error && <p style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '16px', textAlign: 'center' }}>{error}</p>}
+
+                  <div style={{ textAlign: 'center' }}>
+                    <button type="submit" disabled={loading} className="btn-primary">
+                      {loading ? 'Processing...' : 'Submit Symptoms'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                   {(() => {
+                      const style = getResultStyle(triageResult.severity);
+                      return (
+                        <div style={{
+                          background: style.bg,
+                          border: `1px solid ${style.border}`,
+                          borderRadius: '12px',
+                          padding: '24px',
+                          marginBottom: '24px'
+                        }}>
+                          <h3 style={{ color: style.color, fontSize: '1.4rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px' }}>
+                            {triageResult.severity}
+                          </h3>
+                          <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                            {triageResult.recommendation}
+                          </p>
+                          {triageResult.alertMedic && (
+                            <p style={{ marginTop: '16px', fontWeight: 600, color: style.color }}>
+                              ✓ A medic has been notified.
+                            </p>
+                          )}
+                        </div>
+                      );
+                   })()}
+                   <button onClick={() => { setTriageResult(null); setSelectedSymptoms([]); }} className="btn-ghost">
+                      Start Over
+                   </button>
+                </div>
+              )}
             </div>
           </section>
         </div>

@@ -1,19 +1,22 @@
+'use client';
+
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
-import { DoorOpen, MapPin, Clock, Accessibility, QrCode, ArrowLeft } from 'lucide-react';
+import { DoorOpen, MapPin, Clock, Accessibility, QrCode, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-export const metadata = {
-  title: 'Gate Entry — ContextQR | FIFA World Cup 2026',
-  description: 'Context-aware gate entry guidance for stadium visitors. Accessible routes, queue info, and time-based assistance.',
-};
-
-/**
- * Gate scan page — shell layout
- * Logic will be wired to /api/scan in Day 2.
- * Currently shows the layout structure with placeholder content.
- */
 export default function GateScanPage() {
+  const [scanData, setScanData] = useState(null);
+
+  useEffect(() => {
+    // Read the scan result passed from the landing page
+    const stored = sessionStorage.getItem('scan-result-gate');
+    if (stored) {
+      setScanData(JSON.parse(stored));
+    }
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
@@ -73,9 +76,9 @@ export default function GateScanPage() {
             </div>
           </div>
 
-          {/* Context indicators — skeleton placeholders (will be populated Day 3) */}
+          {/* Context indicators */}
           <section aria-labelledby="context-heading" style={{ marginBottom: '32px' }}>
-            <h2 id="context-heading" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.8rem' }}>
+            <h2 id="context-heading" style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Detected Context
             </h2>
             <div
@@ -84,9 +87,9 @@ export default function GateScanPage() {
               style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}
             >
               {[
-                { icon: MapPin,        label: 'Zone',      value: 'Gate Entry',  accent: '#10b981' },
-                { icon: Clock,         label: 'Match Phase', value: 'Pre-Match', accent: '#3b82f6' },
-                { icon: Accessibility, label: 'Profile',   value: 'Standard',    accent: '#f59e0b' },
+                { icon: MapPin,        label: 'Zone',      value: scanData ? scanData.zoneData.name : 'Loading...',  accent: '#10b981' },
+                { icon: Clock,         label: 'Match Phase', value: scanData ? scanData.timeContext : 'Loading...', accent: '#3b82f6' },
+                { icon: Accessibility, label: 'Profile',   value: scanData?.userProfile?.wheelchairUser ? 'Wheelchair User' : 'Standard',    accent: '#f59e0b' },
                 { icon: QrCode,        label: 'QR Status', value: 'Verified ✓',  accent: '#10b981' },
               ].map(({ icon: Icon, label, value, accent }) => (
                 <div
@@ -107,52 +110,85 @@ export default function GateScanPage() {
             </div>
           </section>
 
-          {/* Primary action area — Day 3 will render real response here */}
+          {/* Primary action area */}
           <section aria-labelledby="guidance-heading" style={{ marginBottom: '24px' }}>
             <h2 id="guidance-heading" style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>
               Your Entry Guidance
             </h2>
-            <div
-              className="card"
-              aria-live="polite"
-              aria-busy="true"
-              style={{ padding: '32px', textAlign: 'center' }}
-            >
-              {/* Skeleton placeholder */}
-              <div aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-                <div className="skeleton" style={{ width: '60%', height: '24px' }} />
-                <div className="skeleton" style={{ width: '80%', height: '16px' }} />
-                <div className="skeleton" style={{ width: '70%', height: '16px' }} />
-              </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '24px' }}>
-                🔧 Decision engine wiring in progress — Day 2 task
-              </p>
+            <div className="card" aria-live="polite" style={{ padding: '32px' }}>
+              {!scanData ? (
+                <div aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+                  <div className="skeleton" style={{ width: '60%', height: '24px' }} />
+                  <div className="skeleton" style={{ width: '80%', height: '16px' }} />
+                  <div className="skeleton" style={{ width: '70%', height: '16px' }} />
+                </div>
+              ) : (
+                <div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '16px', color: 'var(--accent)' }}>
+                    {scanData.primary}
+                  </h3>
+                  
+                  {scanData.alerts?.length > 0 && (
+                    <div style={{ background: 'rgba(239,68,68,0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px', border: '1px solid rgba(239,68,68,0.3)' }}>
+                      {scanData.alerts.map((alert, i) => (
+                        <p key={i} style={{ color: '#ef4444', fontWeight: 600, fontSize: '0.9rem' }}>⚠ {alert}</p>
+                      ))}
+                    </div>
+                  )}
+
+                  <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                    {scanData.secondary?.map((item, i) => (
+                      <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <ArrowRight size={16} style={{ color: 'var(--accent)', marginTop: '4px' }} />
+                        <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {scanData.accessibleRoute && (
+                    <div style={{ background: 'rgba(59,130,246,0.1)', padding: '16px', borderRadius: '8px', marginTop: '16px', border: '1px solid rgba(59,130,246,0.3)' }}>
+                      <h4 style={{ color: '#3b82f6', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Accessibility size={18} />
+                        Accessible Route Generated
+                      </h4>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '12px' }}>
+                        Estimated time: {scanData.accessibleRoute.estimatedTime} mins
+                      </p>
+                      <ol style={{ paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        {scanData.accessibleRoute.steps.map(s => (
+                          <li key={s.step} style={{ marginBottom: '4px' }}>{s.instruction}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
 
-          {/* Accessibility info */}
-          <div
-            role="note"
-            aria-label="Accessibility information"
-            style={{
-              background: 'rgba(59,130,246,0.08)',
-              border: '1px solid rgba(59,130,246,0.2)',
-              borderRadius: '12px',
-              padding: '16px 20px',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '12px',
-            }}
-          >
-            <Accessibility size={20} style={{ color: '#3b82f6', flexShrink: 0, marginTop: '2px' }} aria-hidden="true" />
-            <div>
-              <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '4px' }}>Accessibility note</p>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6 }}>
-                Wheelchair-accessible lanes, audio guides, and tactile paths are available at Gate A.
-                Staff assistance is available at all times.
-              </p>
+          {/* Tips info */}
+          {scanData?.tips && scanData.tips.length > 0 && (
+            <div
+              role="note"
+              aria-label="Tips"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+              }}
+            >
+              <div>
+                <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '4px' }}>Useful Tips</p>
+                <ul style={{ paddingLeft: '20px', color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                  {scanData.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </main>
 

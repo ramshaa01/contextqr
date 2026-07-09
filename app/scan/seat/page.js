@@ -1,18 +1,21 @@
+'use client';
+
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
-import { Armchair, MapPin, Clock, Users, Coffee, ArrowLeft } from 'lucide-react';
+import { User, MapPin, Clock, Users, ArrowLeft, ArrowRight, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-export const metadata = {
-  title: 'Seating Area — ContextQR | FIFA World Cup 2026',
-  description: 'Context-aware seating assistance — nearby stalls, crowd density, and real-time match info for stadium visitors.',
-};
-
-/**
- * Seat scan page — shell layout
- * Logic will be wired to /api/scan in Day 2/3.
- */
 export default function SeatScanPage() {
+  const [scanData, setScanData] = useState(null);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('scan-result-seat');
+    if (stored) {
+      setScanData(JSON.parse(stored));
+    }
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
@@ -33,7 +36,7 @@ export default function SeatScanPage() {
 
           {/* Zone header */}
           <div
-            aria-label="Seating Area zone context"
+            aria-label="Seat zone context"
             style={{
               background: 'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04))',
               border: '1px solid rgba(59,130,246,0.25)',
@@ -56,37 +59,37 @@ export default function SeatScanPage() {
                 flexShrink: 0,
               }}
             >
-              <Armchair size={32} style={{ color: '#3b82f6' }} />
+              <User size={32} style={{ color: '#3b82f6' }} />
             </div>
             <div>
               <div style={{ marginBottom: '8px' }}>
                 <span className="badge badge-info" style={{ marginRight: '8px' }}>Zone: Seat</span>
-                <span className="badge badge-success">QR Scan Simulated</span>
+                {scanData?.userProfile?.wheelchairUser && (
+                   <span className="badge badge-warning">Accessibility Mode</span>
+                )}
               </div>
               <h1 id="seat-page-heading" style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '8px' }}>
-                Seating Area Assistance
+                Seat & Area Guide
               </h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Nearby stalls, crowd density info, match context, and assistance options for your section.
+                ContextQR is mapping services around your specific seat location and current match phase.
               </p>
             </div>
           </div>
 
           {/* Context indicators */}
-          <section aria-labelledby="seat-context-heading" style={{ marginBottom: '32px' }}>
-            <h2 id="seat-context-heading" style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Detected Context
+          <section aria-labelledby="context-heading" style={{ marginBottom: '32px' }}>
+            <h2 id="context-heading" style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Your Location Context
             </h2>
             <div
               role="list"
-              aria-label="Seat zone context information"
               style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}
             >
               {[
-                { icon: MapPin,  label: 'Section',      value: 'West Stand 101', accent: '#3b82f6' },
-                { icon: Clock,   label: 'Match Phase',   value: 'Half-Time',     accent: '#f59e0b' },
-                { icon: Users,   label: 'Crowd Density', value: 'Medium 🟡',     accent: '#f59e0b' },
-                { icon: Coffee,  label: 'Nearest Stall', value: '50m North',     accent: '#10b981' },
+                { icon: MapPin, label: 'Section', value: scanData ? scanData.zoneData.name : '...', accent: '#3b82f6' },
+                { icon: Clock,  label: 'Phase',   value: scanData ? scanData.timeContext : '...', accent: '#10b981' },
+                { icon: Users,  label: 'Crowd',   value: scanData ? scanData.zoneData.crowdDensity : '...', accent: scanData?.zoneData?.crowdDensity === 'high' ? '#ef4444' : '#10b981' },
               ].map(({ icon: Icon, label, value, accent }) => (
                 <div
                   key={label}
@@ -106,65 +109,80 @@ export default function SeatScanPage() {
             </div>
           </section>
 
-          {/* Guidance area — skeleton */}
-          <section aria-labelledby="seat-guidance-heading" style={{ marginBottom: '24px' }}>
-            <h2 id="seat-guidance-heading" style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>
-              Your Seat Guidance
+          {/* Real-time guidance */}
+          <section aria-labelledby="guidance-heading" style={{ marginBottom: '24px' }}>
+            <h2 id="guidance-heading" style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>
+              Real-time Recommendations
             </h2>
-            <div
-              className="card"
-              aria-live="polite"
-              aria-busy="true"
-              style={{ padding: '32px', textAlign: 'center' }}
-            >
-              <div aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-                <div className="skeleton" style={{ width: '55%', height: '24px' }} />
-                <div className="skeleton" style={{ width: '75%', height: '16px' }} />
-                <div className="skeleton" style={{ width: '65%', height: '16px' }} />
-              </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '24px' }}>
-                🔧 Decision engine wiring in progress — Day 2 task
-              </p>
+            <div className="card" aria-live="polite" style={{ padding: '32px' }}>
+              {!scanData ? (
+                <div aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+                  <div className="skeleton" style={{ width: '60%', height: '24px' }} />
+                  <div className="skeleton" style={{ width: '80%', height: '16px' }} />
+                  <div className="skeleton" style={{ width: '70%', height: '16px' }} />
+                </div>
+              ) : (
+                <div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '16px', color: 'var(--accent)' }}>
+                    {scanData.primary}
+                  </h3>
+
+                  {scanData.alerts?.length > 0 && (
+                    <div style={{ background: 'rgba(239,68,68,0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px', border: '1px solid rgba(239,68,68,0.3)' }}>
+                      {scanData.alerts.map((alert, i) => (
+                        <p key={i} style={{ color: '#ef4444', fontWeight: 600, fontSize: '0.9rem', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                          <AlertTriangle size={16} style={{ marginTop: '2px', flexShrink: 0 }} />
+                          {alert}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                    {scanData.secondary?.map((item, i) => (
+                      <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <ArrowRight size={16} style={{ color: 'var(--accent)', marginTop: '4px' }} />
+                        <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {scanData.nearbyStall && (
+                     <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: '8px', marginTop: '16px', border: '1px solid var(--border)' }}>
+                        <h4 style={{ fontWeight: 700, marginBottom: '4px', fontSize: '0.95rem' }}>Smart Recommendation</h4>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          Since it's half-time, head to <strong>{scanData.nearbyStall}</strong> for the shortest queue.
+                        </p>
+                     </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
 
-          {/* Crowd density visual */}
-          <div
-            role="status"
-            aria-label="Crowd density indicator: medium"
-            style={{
-              background: 'rgba(245,158,11,0.08)',
-              border: '1px solid rgba(245,158,11,0.2)',
-              borderRadius: '12px',
-              padding: '16px 20px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>
-                <Users size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} aria-hidden="true" />
-                Concourse Crowd Density
-              </span>
-              <span className="badge badge-warning">Medium</span>
-            </div>
+          {/* Tips info */}
+          {scanData?.tips && scanData.tips.length > 0 && (
             <div
-              role="progressbar"
-              aria-valuenow={55}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Crowd density: 55% — medium"
-              style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '8px' }}
+              role="note"
+              aria-label="Tips"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+              }}
             >
-              <div style={{
-                width: '55%', height: '100%',
-                background: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
-                borderRadius: '999px',
-                transition: 'width 0.5s ease',
-              }} />
+              <div>
+                <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '4px' }}>Useful Tips</p>
+                <ul style={{ paddingLeft: '20px', color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                  {scanData.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+                </ul>
+              </div>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '8px' }}>
-              Stall wait time est. 8–12 min during half-time
-            </p>
-          </div>
+          )}
         </div>
       </main>
 

@@ -1,23 +1,46 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { DoorOpen, Armchair, Stethoscope, ArrowRight, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Zap, Loader2 } from 'lucide-react';
 
 /**
  * ZoneCard — clickable card that simulates scanning a QR code for a zone type.
- * Props:
- *  - zone: 'gate' | 'seat' | 'medical-post'
- *  - title: string
- *  - description: string
- *  - icon: lucide icon component
- *  - accent: CSS color string for the icon accent
- *  - delay: CSS animation delay class
  */
 export default function ZoneCard({ zone, title, description, icon: Icon, accent, delay = '' }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleClick = () => {
-    router.push(`/scan/${zone}`);
+  const handleClick = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      // Create a mock payload based on zone type
+      const payload = {
+        zoneType: zone,
+        // Optional mock profile: randomly simulate a wheelchair user for gate to show dynamic logic
+        userProfile: zone === 'gate' && Math.random() > 0.5 ? { wheelchairUser: true } : {}
+      };
+
+      const res = await fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // Store response in sessionStorage to simulate passing scan result context to the page
+        sessionStorage.setItem(`scan-result-${zone}`, JSON.stringify(data));
+      }
+    } catch (e) {
+      console.error("Failed to fetch scan data", e);
+    } finally {
+      setLoading(false);
+      // Navigate even if fetch failed, so the page can show error or fallback
+      router.push(`/scan/${zone}`);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -37,12 +60,13 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
       className={`card animate-fade-up ${delay}`}
       style={{
         padding: '32px 28px',
-        cursor: 'pointer',
+        cursor: loading ? 'wait' : 'pointer',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
+        opacity: loading ? 0.7 : 1
       }}
     >
       {/* Background glow */}
@@ -90,8 +114,8 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
       {/* CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: accent, fontSize: '0.85rem', fontWeight: 600 }}>
-          <Zap size={14} aria-hidden="true" />
-          <span>Simulate Scan</span>
+          {loading ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} aria-hidden="true" />}
+          <span>{loading ? 'Scanning...' : 'Simulate Scan'}</span>
         </div>
         <div
           style={{
