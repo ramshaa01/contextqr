@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Scan, Github, Trophy, Heart } from 'lucide-react';
+import { Scan, Trophy, Heart } from 'lucide-react';
 
 /**
  * AppFooter — global footer
@@ -16,6 +16,16 @@ export default function AppFooter() {
         padding: '32px 0',
       }}
     >
+      <style>{`
+        .footer-link {
+          color: var(--text-muted);
+          font-size: 0.85rem;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .footer-link:hover { color: var(--accent); }
+      `}</style>
+
       <div className="container-app">
         <div style={{
           display: 'flex',
@@ -48,31 +58,13 @@ export default function AppFooter() {
 
           {/* Links */}
           <nav aria-label="Footer navigation" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <Link
-              href="/"
-              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseOver={e => e.target.style.color = 'var(--accent)'}
-              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
-              aria-label="Go to zone simulator"
-            >
+            <Link href="/" className="footer-link" aria-label="Go to zone simulator">
               Simulator
             </Link>
-            <Link
-              href="/scan/gate"
-              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseOver={e => e.target.style.color = 'var(--accent)'}
-              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
-              aria-label="Gate zone demo"
-            >
+            <Link href="/scan/gate" className="footer-link" aria-label="Gate zone demo">
               Gate Demo
             </Link>
-            <Link
-              href="/scan/medical-post"
-              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseOver={e => e.target.style.color = 'var(--accent)'}
-              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
-              aria-label="Medical triage demo"
-            >
+            <Link href="/scan/medical-post" className="footer-link" aria-label="Medical triage demo">
               Medical Demo
             </Link>
           </nav>
