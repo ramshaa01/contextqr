@@ -1,0 +1,60 @@
+[
+  {
+    "zoneId": "zone-gate-a",
+    "zoneType": "gate",
+    "name": "Gate A — North Entrance",
+    "coordinates": { "lat": 40.7128, "lng": -74.006 },
+    "description": "Main north entrance gate. Wheelchair-accessible entry lanes available.",
+    "accessibleFeatures": ["wheelchair-lane", "audio-guide", "tactile-path"],
+    "nearbyMedicalPost": "post-1"
+  },
+  {
+    "zoneId": "zone-gate-b",
+    "zoneType": "gate",
+    "name": "Gate B — South Entrance",
+    "coordinates": { "lat": 40.7118, "lng": -74.005 },
+    "description": "South fan entrance. Family-friendly gate with stroller ramps.",
+    "accessibleFeatures": ["ramp", "family-lane", "tactile-path"],
+    "nearbyMedicalPost": "post-2"
+  },
+  {
+    "zoneId": "zone-seat-101",
+    "zoneType": "seat",
+    "name": "Section 101 — Lower West Stand",
+    "coordinates": { "lat": 40.7125, "lng": -74.0065 },
+    "description": "Lower bowl, west side. Great sightlines. Food concourse 50m north.",
+    "accessibleFeatures": ["accessible-seating-row", "companion-seat"],
+    "nearbyMedicalPost": "post-1",
+    "crowdDensity": "medium",
+    "nearbyStalls": ["stall-food-w1", "stall-merch-w1"]
+  },
+  {
+    "zoneId": "zone-seat-205",
+    "zoneType": "seat",
+    "name": "Section 205 — Upper East Stand",
+    "coordinates": { "lat": 40.7132, "lng": -74.0055 },
+    "description": "Upper deck, east side. Elevator access required for wheelchair users.",
+    "accessibleFeatures": ["elevator", "accessible-seating-row"],
+    "nearbyMedicalPost": "post-2",
+    "crowdDensity": "low",
+    "nearbyStalls": ["stall-food-e2", "stall-drinks-e1"]
+  },
+  {
+    "zoneId": "zone-medical-1",
+    "zoneType": "medical-post",
+    "name": "Medical Post 1 — North Concourse",
+    "coordinates": { "lat": 40.713, "lng": -74.0062 },
+    "description": "Primary medical station. Staffed by 3 paramedics. AED on-site.",
+    "accessibleFeatures": ["wheelchair-accessible", "stretcher-access"],
+    "nearbyMedicalPost": "post-1"
+  },
+  {
+    "zoneId": "zone-medical-2",
+    "zoneType": "medical-post",
+    "name": "Medical Post 2 — South Concourse",
+    "coordinates": { "lat": 40.7115, "lng": -74.0058 },
+    "description": "Secondary medical station. Staffed by 2 paramedics.",
+    "accessibleFeatures": ["wheelchair-accessible"],
+    "nearbyMedicalPost": "post-2"
+  }
+]
