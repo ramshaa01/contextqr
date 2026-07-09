@@ -1,0 +1,35 @@
+[
+  {
+    "postId": "post-1",
+    "name": "Medical Post 1 — North Concourse",
+    "zoneNearby": ["zone-gate-a", "zone-seat-101", "zone-medical-1"],
+    "availability": "available",
+    "waitMinutes": 3,
+    "staffCount": 3,
+    "specialties": ["first-aid", "cardiac", "sports-injury", "heat-exhaustion"],
+    "equipment": ["AED", "oxygen", "stretcher", "wheelchair"],
+    "coordinates": { "lat": 40.713, "lng": -74.0062 }
+  },
+  {
+    "postId": "post-2",
+    "name": "Medical Post 2 — South Concourse",
+    "zoneNearby": ["zone-gate-b", "zone-seat-205", "zone-medical-2"],
+    "availability": "busy",
+    "waitMinutes": 12,
+    "staffCount": 2,
+    "specialties": ["first-aid", "sports-injury", "allergy"],
+    "equipment": ["AED", "first-aid-kit", "wheelchair"],
+    "coordinates": { "lat": 40.7115, "lng": -74.0058 }
+  },
+  {
+    "postId": "post-3",
+    "name": "Medical Post 3 — VIP East Wing",
+    "zoneNearby": ["zone-seat-205"],
+    "availability": "available",
+    "waitMinutes": 1,
+    "staffCount": 2,
+    "specialties": ["first-aid", "cardiac", "diabetic-care"],
+    "equipment": ["AED", "oxygen", "glucose-kit"],
+    "coordinates": { "lat": 40.7128, "lng": -74.0048 }
+  }
+]

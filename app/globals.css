@@ -1,26 +1,295 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   ContextQR — Design System
+   Stadium-grade, accessible color palette (WCAG AA compliant)
+   ============================================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* --- Brand Colors --- */
+  --color-navy-950:  #050f1f;
+  --color-navy-900:  #0b1e3d;
+  --color-navy-800:  #102847;
+  --color-navy-700:  #163459;
+  --color-navy-600:  #1d4270;
+
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+
+  --color-slate-50:  #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+
+  /* --- Typography --- */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* --- Spacing Scale --- */
+  --spacing-1:  4px;
+  --spacing-2:  8px;
+  --spacing-4:  16px;
+  --spacing-6:  24px;
+  --spacing-8:  32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  /* --- Border Radius --- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   CSS Custom Properties (theme tokens)
+   ============================================================ */
+
+:root {
+  --bg-primary:   #0b1e3d;
+  --bg-surface:   #102847;
+  --bg-card:      #163459;
+  --accent:       #10b981;
+  --accent-hover: #34d399;
+  --text-primary: #f8fafc;
+  --text-muted:   #94a3b8;
+  --warning:      #f59e0b;
+  --danger:       #ef4444;
+  --border:       rgba(16, 185, 129, 0.15);
+}
+
+/* High-contrast mode overrides — WCAG AAA for critical accessibility */
+[data-hc="true"] {
+  --bg-primary:   #000000;
+  --bg-surface:   #0a0a0a;
+  --bg-card:      #111111;
+  --accent:       #00ff88;
+  --accent-hover: #00ffaa;
+  --text-primary: #ffffff;
+  --text-muted:   #e0e0e0;
+  --warning:      #ffcc00;
+  --danger:       #ff4444;
+  --border:       rgba(0, 255, 136, 0.3);
+}
+
+/* Font size adjustments for cognitive/visual accessibility */
+[data-fontsize="large"]  { font-size: 112.5%; }
+[data-fontsize="xlarge"] { font-size: 125%;   }
+
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   Global Reset & Base
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Visible focus ring for keyboard users */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ============================================================
+   Layout Utilities
+   ============================================================ */
+
+.container-app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 640px)  { .container-app { padding: 0 24px; } }
+@media (min-width: 1024px) { .container-app { padding: 0 32px; } }
+
+/* ============================================================
+   Component Primitives
+   ============================================================ */
+
+/* Card */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.12);
+}
+
+/* Primary button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #0b1e3d;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+/* Ghost button */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.badge-success { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-warning { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.badge-danger  { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.badge-info    { background: rgba(29,66,112,0.4);   color: #93c5fd; border: 1px solid rgba(147,197,253,0.2); }
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-surface) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect */
+.glow-emerald {
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.35);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70%  { box-shadow: 0 0 0 14px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-fade-up        { animation: fade-up 0.5s ease forwards; }
+.animate-fade-in        { animation: fade-in 0.4s ease forwards; }
+.animate-slide-in-right { animation: slide-in-right 0.4s ease forwards; }
+.animate-pulse-ring     { animation: pulse-ring 2.5s ease-out infinite; }
+.animate-float          { animation: float 4s ease-in-out infinite; }
+
+/* Staggered animation delays for cards */
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.2s; opacity: 0; }
+.delay-3 { animation-delay: 0.3s; opacity: 0; }

@@ -1,0 +1,81 @@
+[
+  {
+    "routeId": "route-gate-a-to-101",
+    "fromZone": "zone-gate-a",
+    "toZone": "zone-seat-101",
+    "wheelchairAccessible": true,
+    "estimatedTime": 4,
+    "estimatedTimeWheelchair": 6,
+    "steps": [
+      { "step": 1, "instruction": "Enter through Gate A accessible lane", "feature": "wheelchair-lane" },
+      { "step": 2, "instruction": "Take the ramp on your left to Level 1", "feature": "ramp" },
+      { "step": 3, "instruction": "Follow the blue tactile path west", "feature": "tactile-path" },
+      { "step": 4, "instruction": "Section 101 accessible entrance is on your right", "feature": "accessible-entry" }
+    ],
+    "landmarks": ["main-concourse", "food-court-west"],
+    "avoidsCrowdedAreas": true
+  },
+  {
+    "routeId": "route-gate-a-to-205",
+    "fromZone": "zone-gate-a",
+    "toZone": "zone-seat-205",
+    "wheelchairAccessible": true,
+    "estimatedTime": 8,
+    "estimatedTimeWheelchair": 12,
+    "steps": [
+      { "step": 1, "instruction": "Enter through Gate A accessible lane", "feature": "wheelchair-lane" },
+      { "step": 2, "instruction": "Proceed straight to the central elevator bank", "feature": "elevator" },
+      { "step": 3, "instruction": "Take elevator to Level 2", "feature": "elevator" },
+      { "step": 4, "instruction": "Turn right and follow signs to East Stand", "feature": "signage" },
+      { "step": 5, "instruction": "Section 205 accessible entrance ahead", "feature": "accessible-entry" }
+    ],
+    "landmarks": ["central-elevator", "upper-concourse", "east-food-court"],
+    "avoidsCrowdedAreas": true
+  },
+  {
+    "routeId": "route-gate-b-to-101",
+    "fromZone": "zone-gate-b",
+    "toZone": "zone-seat-101",
+    "wheelchairAccessible": true,
+    "estimatedTime": 6,
+    "estimatedTimeWheelchair": 9,
+    "steps": [
+      { "step": 1, "instruction": "Enter Gate B via the south ramp", "feature": "ramp" },
+      { "step": 2, "instruction": "Pass food stall row and turn north", "feature": "path" },
+      { "step": 3, "instruction": "Use accessible crossing at concourse junction", "feature": "accessible-crossing" },
+      { "step": 4, "instruction": "Section 101 entrance is ahead on your left", "feature": "accessible-entry" }
+    ],
+    "landmarks": ["south-concourse", "food-stall-row"],
+    "avoidsCrowdedAreas": false
+  },
+  {
+    "routeId": "route-seat-101-to-medical-1",
+    "fromZone": "zone-seat-101",
+    "toZone": "zone-medical-1",
+    "wheelchairAccessible": true,
+    "estimatedTime": 2,
+    "estimatedTimeWheelchair": 3,
+    "steps": [
+      { "step": 1, "instruction": "Exit Section 101 via north exit", "feature": "exit" },
+      { "step": 2, "instruction": "Medical Post 1 is immediately on your right", "feature": "medical-post" }
+    ],
+    "landmarks": ["north-concourse"],
+    "avoidsCrowdedAreas": true
+  },
+  {
+    "routeId": "route-seat-205-to-medical-2",
+    "fromZone": "zone-seat-205",
+    "toZone": "zone-medical-2",
+    "wheelchairAccessible": true,
+    "estimatedTime": 5,
+    "estimatedTimeWheelchair": 7,
+    "steps": [
+      { "step": 1, "instruction": "Exit Section 205 via south elevator", "feature": "elevator" },
+      { "step": 2, "instruction": "Take elevator down to Level 1", "feature": "elevator" },
+      { "step": 3, "instruction": "Follow red medical signs south", "feature": "signage" },
+      { "step": 4, "instruction": "Medical Post 2 is at the end of the south corridor", "feature": "medical-post" }
+    ],
+    "landmarks": ["south-elevator", "south-concourse"],
+    "avoidsCrowdedAreas": true
+  }
+]

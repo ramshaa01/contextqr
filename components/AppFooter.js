@@ -1,0 +1,91 @@
+import Link from 'next/link';
+import { Scan, Github, Trophy, Heart } from 'lucide-react';
+
+/**
+ * AppFooter — global footer
+ */
+export default function AppFooter() {
+  return (
+    <footer
+      role="contentinfo"
+      aria-label="ContextQR footer"
+      style={{
+        borderTop: '1px solid var(--border)',
+        backgroundColor: 'var(--bg-surface)',
+        marginTop: 'auto',
+        padding: '32px 0',
+      }}
+    >
+      <div className="container-app">
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '24px',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '32px', height: '32px',
+              background: 'linear-gradient(135deg, #10b981, #34d399)',
+              borderRadius: '8px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Scan size={16} color="#0b1e3d" aria-hidden="true" />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '1rem' }}>
+              Context<span className="gradient-text">QR</span>
+            </span>
+          </div>
+
+          {/* Mission statement */}
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            Built for{' '}
+            <Trophy size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} aria-hidden="true" />
+            FIFA World Cup 2026 Smart Stadiums
+          </p>
+
+          {/* Links */}
+          <nav aria-label="Footer navigation" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <Link
+              href="/"
+              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseOver={e => e.target.style.color = 'var(--accent)'}
+              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
+              aria-label="Go to zone simulator"
+            >
+              Simulator
+            </Link>
+            <Link
+              href="/scan/gate"
+              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseOver={e => e.target.style.color = 'var(--accent)'}
+              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
+              aria-label="Gate zone demo"
+            >
+              Gate Demo
+            </Link>
+            <Link
+              href="/scan/medical-post"
+              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseOver={e => e.target.style.color = 'var(--accent)'}
+              onMouseOut={e => e.target.style.color = 'var(--text-muted)'}
+              aria-label="Medical triage demo"
+            >
+              Medical Demo
+            </Link>
+          </nav>
+        </div>
+
+        {/* Bottom line */}
+        <div className="divider" />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          Made with <Heart size={12} style={{ color: 'var(--danger)', fill: 'currentColor' }} aria-hidden="true" /> for inclusive sports experiences
+          &nbsp;·&nbsp;
+          <span>WCAG AA Accessible</span>
+        </p>
+      </div>
+    </footer>
+  );
+}
