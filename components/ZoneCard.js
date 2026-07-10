@@ -2,7 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowRight, Zap, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAccessibleMotion, transitions } from '@/lib/motion';
+import { Loader2, ArrowRight, Zap } from 'lucide-react';
 
 /**
  * ZoneCard — clickable card that simulates scanning a QR code for a zone type.
@@ -11,7 +13,7 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleClick = async () => {
+  const handleScan = async () => {
     if (loading) return;
     setLoading(true);
 
@@ -19,7 +21,6 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
       // Create a mock payload based on zone type
       const payload = {
         zoneType: zone,
-        // Optional mock profile: randomly simulate a wheelchair user for gate to show dynamic logic
         userProfile: zone === 'gate' && Math.random() > 0.5 ? { wheelchairUser: true } : {}
       };
 
@@ -31,33 +32,29 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
 
       if (res.ok) {
         const data = await res.json();
-        // Store response in sessionStorage to simulate passing scan result context to the page
         sessionStorage.setItem(`scan-result-${zone}`, JSON.stringify(data));
       }
     } catch (e) {
       console.error("Failed to fetch scan data", e);
     } finally {
       setLoading(false);
-      // Navigate even if fetch failed, so the page can show error or fallback
       router.push(`/scan/${zone}`);
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
-    }
-  };
+  const motionProps = useAccessibleMotion({
+    whileHover: { scale: 1.02, y: -4 },
+    whileTap: { scale: 0.98 },
+    transition: transitions.spring
+  });
 
   return (
-    <div
+    <motion.div
+      {...motionProps}
       role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      aria-label={`Simulate QR scan for ${title}. Press Enter to activate.`}
-      className={`card animate-fade-up ${delay}`}
+      onClick={handleScan}
+      aria-label={`Simulate QR scan for ${title}. Click to activate.`}
+      className={`card ${delay}`}
       style={{
         padding: '32px 28px',
         cursor: loading ? 'wait' : 'pointer',

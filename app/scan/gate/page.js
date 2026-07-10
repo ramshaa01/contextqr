@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Mini-map: abstract SVG stadium diagram ─────────────────── */
 function StadiumMiniMap({ highlightGate = 'north', isAccessible = false }) {
@@ -229,14 +231,15 @@ export default function GateScanPage() {
                 <section aria-labelledby="guidance-heading">
                   <h2 id="guidance-heading" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '14px' }}>Your Entry Guidance</h2>
                   <div className="card" aria-live="polite" style={{ padding: '24px', height: '100%' }}>
+                    <AnimatePresence mode="wait">
                     {!scanData ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div className="skeleton" style={{ width: '80%', height: '20px' }} />
                         <div className="skeleton" style={{ width: '100%', height: '16px' }} />
                         <div className="skeleton" style={{ width: '90%', height: '16px' }} />
-                      </div>
+                      </motion.div>
                     ) : (
-                      <div>
+                      <motion.div key="content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '14px', color: accent, lineHeight: 1.4 }}>
                           {scanData.primary}
                         </h3>
@@ -271,8 +274,9 @@ export default function GateScanPage() {
                           <Navigation size={16} aria-hidden="true" />
                           Get Directions
                         </button>
-                      </div>
+                      </motion.div>
                     )}
+                    </AnimatePresence>
                   </div>
                 </section>
 

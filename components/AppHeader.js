@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Scan, Sun, ZoomIn, ZoomOut, Menu, X, Wifi } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAccessibleMotion } from '@/lib/motion';
 
 /**
  * AppHeader — global navigation header
@@ -59,6 +61,11 @@ export default function AppHeader() {
     justifyContent: 'center',
   };
 
+  const motionProps = useAccessibleMotion({
+    whileHover: { scale: 1.05 },
+    whileTap: { scale: 0.95 }
+  });
+
   return (
     <header
       role="banner"
@@ -101,7 +108,8 @@ export default function AppHeader() {
         {!isMobile && (
           <nav role="navigation" aria-label="Accessibility and status controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div role="group" aria-label="Accessibility controls" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <button
+              <motion.button
+                {...motionProps}
                 onClick={() => setHcMode(prev => !prev)}
                 aria-pressed={hcMode}
                 aria-label={`High contrast: ${hcMode ? 'on' : 'off'}`}
@@ -110,8 +118,9 @@ export default function AppHeader() {
                 style={btnStyle}
               >
                 <Sun size={16} aria-hidden="true" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                {...motionProps}
                 onClick={cycleFontSize}
                 aria-label={`Font size: ${fontSize}. Click to increase.`}
                 title={`Font size: ${fontSize}`}
@@ -121,7 +130,7 @@ export default function AppHeader() {
                 {fontSize === 'xlarge'
                   ? <ZoomOut size={16} aria-hidden="true" />
                   : <ZoomIn  size={16} aria-hidden="true" />}
-              </button>
+              </motion.button>
             </div>
 
             <div

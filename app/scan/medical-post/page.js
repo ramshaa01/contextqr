@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Triage severity config ──────────────────────────────────── */
 const SEVERITY = {
@@ -70,10 +72,20 @@ function TriageResult({ result, postInfo, onReset }) {
   const cfg = SEVERITY[result.severity] || SEVERITY['self-care'];
   const SevIcon = cfg.icon;
 
+  const isUrgent = result.severity === 'urgent';
+  const motionProps = useAccessibleMotion({
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { type: 'spring', stiffness: 300, damping: 25 }
+  });
+
   return (
-    <div aria-live="assertive" aria-atomic="true">
+    <motion.div aria-live="assertive" aria-atomic="true" {...motionProps}>
       {/* Main severity banner */}
-      <div style={{
+      <motion.div
+        animate={isUrgent ? { scale: [1, 1.05, 1] } : {}}
+        transition={isUrgent ? { duration: 0.4, ease: 'easeOut' } : {}}
+        style={{
         background: cfg.bg, border: `2px solid ${cfg.border}`,
         borderRadius: '16px', padding: 'clamp(20px,4vw,32px)',
         marginBottom: '20px', textAlign: 'center',
@@ -134,7 +146,7 @@ function TriageResult({ result, postInfo, onReset }) {
           ← Start Over
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -285,14 +297,16 @@ export default function MedicalPostScanPage() {
                   Quick Symptom Check
                 </h2>
                 <div className="card" style={{ padding: 'clamp(20px,4vw,36px)' }}>
+                  <AnimatePresence mode="wait">
                   {triageResult ? (
                     <TriageResult
+                      key="result"
                       result={triageResult}
                       postInfo={postInfo}
                       onReset={() => { setTriageResult(null); setSelectedSymptoms([]); }}
                     />
                   ) : (
-                    <form onSubmit={handleSubmit}>
+                    <motion.form key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onSubmit={handleSubmit}>
                       <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                         <div style={{ width: '52px', height: '52px', background: 'rgba(245,158,11,0.1)', border: '2px solid rgba(245,158,11,0.2)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                           <Stethoscope size={24} style={{ color: '#f59e0b' }} aria-hidden="true" />
@@ -353,8 +367,9 @@ export default function MedicalPostScanPage() {
                           {submitting ? 'Processing...' : 'Submit Symptoms →'}
                         </button>
                       </div>
-                    </form>
+                    </motion.form>
                   )}
+                  </AnimatePresence>
                 </div>
               </section>
             </>

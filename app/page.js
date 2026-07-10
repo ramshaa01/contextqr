@@ -4,6 +4,21 @@ import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import ZoneCard from '@/components/ZoneCard';
 import { DoorOpen, Armchair, Stethoscope, QrCode, Cpu, Accessibility, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAccessibleMotion } from '@/lib/motion';
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariant = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 /**
  * Landing page — Zone Simulator
@@ -11,6 +26,8 @@ import { DoorOpen, Armchair, Stethoscope, QrCode, Cpu, Accessibility, ChevronDow
  * This is the entry point of the ContextQR experience.
  */
 export default function HomePage() {
+  const motionProps = useAccessibleMotion({});
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
@@ -136,7 +153,10 @@ export default function HomePage() {
             </div>
 
             {/* Zone cards grid */}
-            <div
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
               role="list"
               aria-label="Stadium zones — click to simulate QR scan"
               style={{
@@ -147,37 +167,34 @@ export default function HomePage() {
                 margin: '0 auto',
               }}
             >
-              <div role="listitem">
+              <motion.div variants={itemVariant} role="listitem">
                 <ZoneCard
                   zone="gate"
                   title="Gate Entry"
                   description="Arrive at any stadium gate and scan — get entry guidance, queue info, and accessible route directions tailored to your profile."
                   icon={DoorOpen}
                   accent="#10b981"
-                  delay="delay-1"
                 />
-              </div>
-              <div role="listitem">
+              </motion.div>
+              <motion.div variants={itemVariant} role="listitem">
                 <ZoneCard
                   zone="seat"
                   title="Seating Area"
                   description="Already inside? Scan from your seat — get nearby stalls, crowd density, half-time tips, and real-time assistance options."
                   icon={Armchair}
                   accent="#3b82f6"
-                  delay="delay-2"
                 />
-              </div>
-              <div role="listitem">
+              </motion.div>
+              <motion.div variants={itemVariant} role="listitem">
                 <ZoneCard
                   zone="medical-post"
                   title="Medical Post"
                   description="Scan at any medical post — trigger a symptom triage form, see nearest medic availability, and get immediate guidance."
                   icon={Stethoscope}
                   accent="#f59e0b"
-                  delay="delay-3"
                 />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 

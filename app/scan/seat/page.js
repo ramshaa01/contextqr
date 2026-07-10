@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Density helpers ─────────────────────────────────────────── */
 const DENSITY_CONFIG = {
@@ -30,10 +32,16 @@ function DensityBar({ level }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
       <div style={{ display: 'flex', gap: '3px' }}>
         {[1, 2, 3].map(b => (
-          <div key={b} style={{
-            width: '8px', height: '18px', borderRadius: '3px',
-            background: b <= cfg.bars ? cfg.color : 'rgba(255,255,255,0.1)',
-          }} />
+          <div key={b} style={{ width: '8px', height: '18px', borderRadius: '3px', background: 'rgba(255,255,255,0.1)', position: 'relative', overflow: 'hidden' }}>
+            {b <= cfg.bars && (
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: '100%' }}
+                transition={{ duration: 0.4, delay: b * 0.1, ease: 'easeOut' }}
+                style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: cfg.color, borderRadius: '3px' }}
+              />
+            )}
+          </div>
         ))}
       </div>
       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: cfg.color }}>{cfg.label}</span>
@@ -58,14 +66,17 @@ function StallCard({ stall, timeContext, isRecommended }) {
       aria-label={`${stall.name} — ${density} crowd density, ${stall.distanceMeters}m away`}
     >
       {isRecommended && (
-        <div style={{
+        <motion.div
+          animate={{ boxShadow: [`0 0 0px ${cfg.color}00`, `0 0 12px ${cfg.color}40`, `0 0 0px ${cfg.color}00`] }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+          style={{
           position: 'absolute', top: '10px', right: '10px',
           display: 'flex', alignItems: 'center', gap: '4px',
           background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)',
           borderRadius: '99px', padding: '3px 8px', fontSize: '0.7rem', fontWeight: 700, color: '#10b981',
         }}>
           <Star size={10} fill="currentColor" aria-hidden="true" /> Recommended
-        </div>
+        </motion.div>
       )}
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
@@ -221,13 +232,14 @@ export default function SeatScanPage() {
               <section aria-labelledby="guidance-heading" style={{ marginBottom: '28px' }}>
                 <h2 id="guidance-heading" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '14px' }}>Real-time Guidance</h2>
                 <div className="card" aria-live="polite" style={{ padding: '24px' }}>
+                  <AnimatePresence mode="wait">
                   {!scanData ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div className="skeleton" style={{ width: '80%', height: '20px' }} />
                       <div className="skeleton" style={{ width: '100%', height: '16px' }} />
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div>
+                    <motion.div key="content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                       <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '14px', color: '#3b82f6', lineHeight: 1.4 }}>
                         {scanData.primary}
                       </h3>
@@ -248,8 +260,9 @@ export default function SeatScanPage() {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </motion.div>
                   )}
+                  </AnimatePresence>
                 </div>
               </section>
 
