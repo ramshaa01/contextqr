@@ -293,3 +293,108 @@ body {
 .delay-1 { animation-delay: 0.1s; opacity: 0; }
 .delay-2 { animation-delay: 0.2s; opacity: 0; }
 .delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+/* ============================================================
+   Accessibility Utilities
+   ============================================================ */
+
+/* Screen-reader only — visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================
+   Mobile-first Responsive Overrides
+   375px — small phone baseline
+   ============================================================ */
+
+/* Minimum tap target size: 44×44px (WCAG 2.5.5) */
+button,
+[role="button"],
+a.btn-primary,
+a.btn-ghost,
+label[for] {
+  min-height: 44px;
+}
+
+/* Tighten hero padding on small screens */
+@media (max-width: 480px) {
+  /* Hero section breathing room */
+  section[aria-labelledby="hero-heading"] {
+    padding: 48px 0 40px !important;
+  }
+
+  /* Zone card grid goes single column */
+  [role="list"][aria-label="Stadium zones — click to simulate QR scan"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* How it works grid: single column */
+  ol[style*="grid"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Header: tighten up */
+  header .container-app {
+    gap: 8px !important;
+  }
+
+  /* Prevent horizontal overflow from large text */
+  h1, h2, h3 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Context indicator grids: 2 col on phone */
+  [role="list"][aria-label="Context information"],
+  [role="list"][aria-label="Medical post status"],
+  [role="list"][aria-label="Nearby stalls sorted by crowd density"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Stall cards: full width */
+  [role="list"][aria-label="Nearby stalls sorted by crowd density"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Card padding reduction on small screens */
+  .card {
+    border-radius: 12px;
+  }
+
+  /* Two-column gate/map layout: stack vertically */
+  [style*="gridTemplateColumns: repeat(auto-fit, minmax(280px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 768px — tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  section[aria-labelledby="hero-heading"] {
+    padding: 60px 0 48px !important;
+  }
+}
+
+/* Prevent the AppHeader controls from wrapping awkwardly on 375px */
+@media (max-width: 420px) {
+  /* Stack header items vertically on very small screens */
+  header nav,
+  header [role="toolbar"] {
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  /* Shrink font cycle and HC toggle text labels if present */
+  header button span {
+    display: none;
+  }
+}
+

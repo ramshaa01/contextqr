@@ -1,0 +1,86 @@
+[
+  {
+    "stallId": "stall-food-w1",
+    "name": "West Concourse Food Hall",
+    "type": "food",
+    "location": "Level 1 West, Gate A side",
+    "amenities": ["burgers", "wraps", "vegan options"],
+    "crowdByPhase": {
+      "pre-match": "low",
+      "live": "medium",
+      "half-time": "high",
+      "post-match": "medium"
+    },
+    "distanceMeters": 45
+  },
+  {
+    "stallId": "stall-merch-w1",
+    "name": "Official FIFA Merchandise",
+    "type": "merchandise",
+    "location": "Level 1 West, near Gate A",
+    "amenities": ["jerseys", "scarves", "souvenirs"],
+    "crowdByPhase": {
+      "pre-match": "medium",
+      "live": "low",
+      "half-time": "medium",
+      "post-match": "high"
+    },
+    "distanceMeters": 60
+  },
+  {
+    "stallId": "stall-drinks-w1",
+    "name": "West Bar & Refreshments",
+    "type": "drinks",
+    "location": "Level 1 West, near Section 101",
+    "amenities": ["water", "soft drinks", "hot drinks"],
+    "crowdByPhase": {
+      "pre-match": "low",
+      "live": "low",
+      "half-time": "high",
+      "post-match": "medium"
+    },
+    "distanceMeters": 30
+  },
+  {
+    "stallId": "stall-restroom-w1",
+    "name": "Restrooms — West Block",
+    "type": "restroom",
+    "location": "Level 1 West, Section 101 corridor",
+    "amenities": ["accessible toilet", "baby change"],
+    "crowdByPhase": {
+      "pre-match": "low",
+      "live": "low",
+      "half-time": "high",
+      "post-match": "high"
+    },
+    "distanceMeters": 20
+  },
+  {
+    "stallId": "stall-food-e2",
+    "name": "East Terrace Street Food",
+    "type": "food",
+    "location": "Level 2 East, near Section 205",
+    "amenities": ["hot dogs", "nachos", "halal options"],
+    "crowdByPhase": {
+      "pre-match": "low",
+      "live": "medium",
+      "half-time": "high",
+      "post-match": "medium"
+    },
+    "distanceMeters": 55
+  },
+  {
+    "stallId": "stall-drinks-e1",
+    "name": "East Refreshment Kiosk",
+    "type": "drinks",
+    "location": "Level 2 East, Section 205 corridor",
+    "amenities": ["water", "energy drinks", "juices"],
+    "crowdByPhase": {
+      "pre-match": "low",
+      "live": "low",
+      "half-time": "medium",
+      "post-match": "medium"
+    },
+    "distanceMeters": 35
+  }
+]
