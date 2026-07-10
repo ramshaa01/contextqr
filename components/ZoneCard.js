@@ -130,6 +130,6 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
           <ArrowRight size={16} style={{ color: accent }} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
