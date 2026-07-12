@@ -72,10 +72,13 @@ export default function AppFooter() {
 
         {/* Bottom line */}
         <div className="divider" />
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
           Made with <Heart size={12} style={{ color: 'var(--danger)', fill: 'currentColor' }} aria-hidden="true" /> for inclusive sports experiences
           &nbsp;·&nbsp;
-          <span>WCAG AA Accessible</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }} aria-label="Accessibility features">
+            <span aria-hidden="true" title="WCAG AA Compliant, Screen Reader Ready, Keyboard Navigable, Reduced Motion Support, High Contrast Mode">♿ WCAG AA Accessible</span>
+            <span className="sr-only">This site supports high contrast, large text, keyboard navigation, reduced motion, and screen readers.</span>
+          </span>
         </p>
       </div>
     </footer>

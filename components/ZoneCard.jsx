@@ -42,6 +42,13 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleScan();
+    }
+  };
+
   const motionProps = useAccessibleMotion({
     whileHover: { scale: 1.02, y: -4 },
     whileTap: { scale: 0.98 },
@@ -52,8 +59,11 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
     <motion.div
       {...motionProps}
       role="button"
+      tabIndex={0}
       onClick={handleScan}
-      aria-label={`Simulate QR scan for ${title}. Click to activate.`}
+      onKeyDown={handleKeyDown}
+      aria-busy={loading}
+      aria-label={`Simulate QR scan for ${title}. Press Enter or Space to activate.`}
       className={`card ${delay}`}
       style={{
         padding: '32px 28px',

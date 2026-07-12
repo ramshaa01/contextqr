@@ -14,9 +14,9 @@ import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Density helpers ─────────────────────────────────────────── */
 const DENSITY_CONFIG = {
-  low:    { color: '#10b981', label: 'Low',    bars: 1, bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.3)' },
-  medium: { color: '#f59e0b', label: 'Medium', bars: 2, bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
-  high:   { color: '#ef4444', label: 'High',   bars: 3, bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)' },
+  low:    { color: '#10b981', label: 'Low',      bars: 1, bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.3)' },
+  medium: { color: '#fbbf24', label: 'Moderate', bars: 2, bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.3)' },
+  high:   { color: '#f87171', label: 'High',     bars: 3, bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
 };
 
 const TYPE_ICONS = {

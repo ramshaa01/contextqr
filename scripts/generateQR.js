@@ -10,7 +10,7 @@ async function generateQRCodes() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // Placeholder deployed URL for now
+  // The base URL where the application will be hosted
   const baseUrl = 'https://contextqr-demo.vercel.app';
 
   const zones = [

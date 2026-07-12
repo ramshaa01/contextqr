@@ -15,18 +15,18 @@ import { useAccessibleMotion } from '@/lib/motion';
 /* ── Triage severity config ──────────────────────────────────── */
 const SEVERITY = {
   urgent: {
-    color: '#ef4444',
-    bg: 'rgba(239,68,68,0.12)',
-    border: 'rgba(239,68,68,0.35)',
+    color: '#f87171',
+    bg: 'rgba(248,113,113,0.12)',
+    border: 'rgba(248,113,113,0.35)',
     label: '🚨 URGENT',
     icon: Siren,
     responseTime: '< 2 minutes',
     tone: 'Stay where you are. A medic is being dispatched to your exact location.',
   },
   moderate: {
-    color: '#f59e0b',
-    bg: 'rgba(245,158,11,0.1)',
-    border: 'rgba(245,158,11,0.3)',
+    color: '#fbbf24',
+    bg: 'rgba(251,191,36,0.1)',
+    border: 'rgba(251,191,36,0.3)',
     label: '⚠ MODERATE',
     icon: AlertTriangle,
     responseTime: '5–10 minutes',
@@ -80,7 +80,7 @@ function TriageResult({ result, postInfo, onReset }) {
   });
 
   return (
-    <motion.div aria-live="assertive" aria-atomic="true" {...motionProps}>
+    <motion.div aria-live={isUrgent ? "assertive" : "polite"} aria-atomic="true" {...motionProps}>
       {/* Main severity banner */}
       <motion.div
         animate={isUrgent ? { scale: [1, 1.05, 1] } : {}}
@@ -121,7 +121,7 @@ function TriageResult({ result, postInfo, onReset }) {
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: cfg.color }}>Medic notified</span>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Details grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '20px' }}>
@@ -262,7 +262,7 @@ export default function MedicalPostScanPage() {
                     Medical Assistance
                   </h1>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                    You've scanned at <strong style={{ color: 'var(--text-primary)' }}>{postInfo?.name ?? 'Medical Post 1 — North Concourse'}</strong>.
+                    You&apos;ve scanned at <strong style={{ color: 'var(--text-primary)' }}>{postInfo?.name ?? 'Medical Post 1 — North Concourse'}</strong>.
                     Complete the symptom check below for immediate guidance.
                   </p>
                 </div>
