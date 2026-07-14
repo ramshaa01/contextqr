@@ -355,7 +355,7 @@ export default function MedicalPostScanPage() {
                       {/* Natural Language Input */}
                       <div style={{ marginBottom: '24px' }}>
                         <label htmlFor="symptom-text" style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px' }}>
-                          Describe how you're feeling:
+                          Describe how you&apos;re feeling:
                         </label>
                         <textarea
                           id="symptom-text"
