@@ -60,28 +60,47 @@ export default function HomePage() {
             opacity: 0.85
           }} />
 
-          {/* Floating FIFA Ball */}
-          <div className="animate-float" style={{
+          {/* Animated CSS Sphere - no image transparency issues */}
+          <div className="animate-float" aria-hidden="true" style={{
             position: 'absolute',
-            top: '10%',
-            right: '10%',
-            width: 'clamp(100px, 15vw, 180px)',
-            height: 'clamp(100px, 15vw, 180px)',
-            backgroundImage: 'url(/images/fifa-ball.png)',
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            opacity: 0.8,
+            top: '12%',
+            right: '8%',
+            width: 'clamp(100px, 13vw, 160px)',
+            height: 'clamp(100px, 13vw, 160px)',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, rgba(16,185,129,0.9), rgba(6,182,212,0.6) 50%, rgba(16,185,129,0.1) 80%)',
+            boxShadow: '0 0 40px rgba(16,185,129,0.35), inset -8px -8px 20px rgba(0,0,0,0.3)',
             pointerEvents: 'none',
-          }} />
+          }}>
+            {/* Inner highlight */}
+            <div style={{
+              position: 'absolute',
+              top: '15%',
+              left: '20%',
+              width: '30%',
+              height: '20%',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.4)',
+              filter: 'blur(4px)',
+            }} />
+            {/* Subtle grid lines to suggest a ball */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: 'inset 0 0 0 33% rgba(0,0,0,0.05), inset 0 0 0 66% rgba(0,0,0,0.03)',
+            }} />
+          </div>
 
           <div className="container-app animate-fade-in-scale" style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '100%' }}>
             {/* Event badge */}
             <div
-              aria-label="FIFA World Cup 2026 Smart Stadiums Challenge"
+              aria-label="Smart Stadium 2026 Challenge"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px', background: 'var(--card)', padding: '6px 12px', borderRadius: '99px', border: '1px solid var(--border)' }}
             >
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)' }}>
-                🏆 FIFA World Cup 2026
+                🏟️ Smart Stadium 2026
               </span>
             </div>
 

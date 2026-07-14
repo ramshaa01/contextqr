@@ -1,7 +1,5 @@
 import { Sora, Inter } from 'next/font/google';
 import './globals.css';
-import AppHeader from '@/components/AppHeader';
-import AppFooter from '@/components/AppFooter';
 import { ThemeProvider } from 'next-themes';
 
 const sora = Sora({ 
@@ -26,13 +24,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={`${sora.variable} ${inter.variable}`}>
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <AppHeader />
-            <main style={{ flex: 1 }}>
-              {children}
-            </main>
-            <AppFooter />
-          </div>
+          {children}
         </ThemeProvider>
       </body>
     </html>
