@@ -7,6 +7,9 @@ ContextQR transforms a single static QR code into a dynamic, context-aware safet
 ## 🎯 Problem Statement
 Smart Stadiums struggle with information overload. Fans are presented with dozens of signs, maps, and emergency directions. During an emergency or high-stress situation, navigating complex apps or searching for the right map is inefficient and dangerous.
 
+## 🤔 Why ContextQR Fits This Challenge
+Smart Stadiums & Tournament Operations demands GenAI-powered, real-time, context-aware assistance. ContextQR delivers exactly this: a single QR touchpoint that makes logical, context-based decisions (zone + time + accessibility profile) instantly — solving real fan-safety and accessibility problems with practical, deployable logic, enhanced by a GenAI layer for natural interaction.
+
 ## 🧑‍🦽 Chosen Vertical: Medical & Accessibility
 We focused on the **Medical & Accessibility** persona. For users with disabilities, or fans experiencing a medical emergency, rapid and tailored information is critical. ContextQR eliminates the need to search; a user simply scans the nearest QR code, and the system intelligently responds based on *where* they are, *when* it is, and *who* they are.
 

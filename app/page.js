@@ -280,7 +280,7 @@ export default function HomePage() {
                 {
                   step: '03',
                   title: 'Rules Engine',
-                  desc: 'A deterministic rules engine handles all safety-critical decisions. An optional GenAI layer (Gemini) adds natural language understanding on top, with automatic fallback to the rules engine if unavailable.',
+                  desc: 'A transparent decision engine maps zone, match phase, and accessibility profile to the exact guidance a fan needs — instantly, and explainably. An optional AI layer adds natural language understanding on top, never the safety-critical decision itself.',
                 },
                 {
                   step: '04',
