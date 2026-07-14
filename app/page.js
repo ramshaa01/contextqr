@@ -280,12 +280,12 @@ export default function HomePage() {
                 {
                   step: '03',
                   title: 'Rules Engine',
-                  desc: 'A decision tree maps context + profile to a tailored response. No ML, no external APIs.',
+                  desc: 'A deterministic rules engine handles all safety-critical decisions. An optional GenAI layer (Gemini) adds natural language understanding on top, with automatic fallback to the rules engine if unavailable.',
                 },
                 {
                   step: '04',
                   title: 'Adaptive Response',
-                  desc: 'You receive guidance specific to your situation — accessible, multi-language, real-time.',
+                  desc: 'You receive guidance specific to your situation — accessible, real-time.',
                 },
               ].map(({ step, title, desc }) => (
                 <li
