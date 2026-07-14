@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AskContextQR from '@/components/AskContextQR';
 import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Density helpers ─────────────────────────────────────────── */
@@ -91,14 +92,14 @@ function StallCard({ stall, timeContext, isRecommended }) {
           <p style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '2px', paddingRight: isRecommended ? '80px' : '0' }}>
             {stall.name}
           </p>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{stall.location}</p>
+          <p style={{ fontSize: '0.8rem', color: 'var(--foreground)' }}>{stall.location}</p>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <DensityBar level={density} />
         <div style={{ display: 'flex', align: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <MapPin size={12} aria-hidden="true" /> {stall.distanceMeters}m
           </span>
         </div>
@@ -107,7 +108,7 @@ function StallCard({ stall, timeContext, isRecommended }) {
       {stall.amenities?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '10px' }}>
           {stall.amenities.map(a => (
-            <span key={a} style={{ fontSize: '0.7rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '2px 6px' }}>
+            <span key={a} style={{ fontSize: '0.7rem', color: 'var(--foreground)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '2px 6px' }}>
               {a}
             </span>
           ))}
@@ -122,10 +123,10 @@ function NoScanFallback() {
   return (
     <div style={{ textAlign: 'center', padding: '64px 24px' }}>
       <div style={{ width: '72px', height: '72px', background: 'rgba(148,163,184,0.1)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-        <QrCode size={32} style={{ color: 'var(--text-muted)' }} />
+        <QrCode size={32} style={{ color: 'var(--foreground)' }} />
       </div>
       <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '12px' }}>No scan detected</h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
+      <p style={{ color: 'var(--foreground)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
         This page responds to a QR code scan. Simulate one from the home page to see crowd density and nearby amenities.
       </p>
       <Link href="/" className="btn-primary" style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', textDecoration: 'none' }}>
@@ -140,10 +141,31 @@ export default function SeatScanPage() {
   const [scanData, setScanData] = useState(null);
   const [stalls, setStalls] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [geminiResponse, setGeminiResponse] = useState(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('scan-result-seat');
-    if (stored) setScanData(JSON.parse(stored));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setScanData(parsed);
+
+      // Layer 2: Natural Language Response Generation
+      fetch('/api/generate-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primary: parsed.primary,
+          secondary: parsed.secondary,
+          timeContext: parsed.timeContext,
+          zoneType: parsed.zoneType
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.text) setGeminiResponse(data.text);
+      })
+      .catch(err => console.error("Gemini generation failed, falling back to static", err));
+    }
     setLoaded(true);
 
     // Fetch stalls data
@@ -200,7 +222,7 @@ export default function SeatScanPage() {
                   <h1 id="seat-page-heading" style={{ fontSize: 'clamp(1.3rem,3vw,1.65rem)', fontWeight: 800, marginBottom: '8px' }}>
                     Seat & Area Guide
                   </h1>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                  <p style={{ color: 'var(--foreground)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                     {scanData?.zoneData?.description ?? 'Loading your seat context...'}
                   </p>
                 </div>
@@ -208,7 +230,7 @@ export default function SeatScanPage() {
 
               {/* Context indicators */}
               <section aria-labelledby="seat-context-heading" style={{ marginBottom: '28px' }}>
-                <h2 id="seat-context-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <h2 id="seat-context-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--foreground)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   Your Location Context
                 </h2>
                 <div role="list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
@@ -220,7 +242,7 @@ export default function SeatScanPage() {
                     <div key={label} role="listitem" className="card" style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Icon size={14} style={{ color: accent }} aria-hidden="true" />
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--foreground)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
                       </div>
                       <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{value}</span>
                     </div>
@@ -240,9 +262,14 @@ export default function SeatScanPage() {
                     </motion.div>
                   ) : (
                     <motion.div key="content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '14px', color: '#3b82f6', lineHeight: 1.4 }}>
-                        {scanData.primary}
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '6px', color: '#3b82f6', lineHeight: 1.4 }}>
+                        {geminiResponse || scanData.primary}
                       </h3>
+                      {geminiResponse && (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--foreground)', opacity: 0.7, marginBottom: '14px', fontStyle: 'italic' }}>
+                          ✨ AI-generated summary
+                        </div>
+                      )}
                       {scanData.alerts?.length > 0 && (
                         <div role="alert" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '10px 14px', marginBottom: '14px' }}>
                           {scanData.alerts.map((a, i) => (
@@ -270,14 +297,14 @@ export default function SeatScanPage() {
               <section aria-labelledby="stalls-heading" style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
                   <h2 id="stalls-heading" style={{ fontSize: '1rem', fontWeight: 700 }}>Nearby Amenities</h2>
-                  <div style={{ display: 'flex', gap: '8px', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  <div style={{ display: 'flex', gap: '8px', fontSize: '0.72rem', color: 'var(--foreground)' }}>
                     <span>Sorted by crowd density · {timeContext}</span>
                   </div>
                 </div>
 
                 {nearbyStalls.length === 0 ? (
                   <div className="card" style={{ padding: '24px', textAlign: 'center' }}>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    <p style={{ color: 'var(--foreground)', fontSize: '0.9rem' }}>
                       {stalls.length === 0 ? 'Loading amenities...' : 'No nearby amenities found for this zone.'}
                     </p>
                   </div>
@@ -296,7 +323,7 @@ export default function SeatScanPage() {
               {scanData?.tips?.length > 0 && (
                 <div role="note" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px 20px' }}>
                   <p style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '8px' }}>💡 Tips</p>
-                  <ul style={{ paddingLeft: '18px', color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  <ul style={{ paddingLeft: '18px', color: 'var(--foreground)', fontSize: '0.85rem', lineHeight: 1.7 }}>
                     {scanData.tips.map((tip, i) => <li key={i}>{tip}</li>)}
                   </ul>
                 </div>
@@ -307,6 +334,7 @@ export default function SeatScanPage() {
       </main>
 
       <AppFooter />
+      {scanData && <AskContextQR currentContext={{ ...scanData, stalls }} />}
     </div>
   );
 }

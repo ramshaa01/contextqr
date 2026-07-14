@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AskContextQR from '@/components/AskContextQR';
 import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Triage severity config ──────────────────────────────────── */
@@ -53,10 +54,10 @@ function NoScanFallback() {
         borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 24px',
       }}>
-        <QrCode size={32} style={{ color: 'var(--text-muted)' }} />
+        <QrCode size={32} style={{ color: 'var(--foreground)' }} />
       </div>
       <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '12px' }}>No scan detected</h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
+      <p style={{ color: 'var(--foreground)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
         This page responds to a QR code scan. Simulate one from the home page to access medical assistance.
       </p>
       <Link href="/" className="btn-primary"
@@ -108,7 +109,7 @@ function TriageResult({ result, postInfo, onReset }) {
           {cfg.label}
         </h3>
 
-        <p style={{ fontSize: 'clamp(0.9rem,2vw,1.05rem)', lineHeight: 1.65, color: 'var(--text-primary)', maxWidth: '440px', margin: '0 auto 16px' }}>
+        <p style={{ fontSize: 'clamp(0.9rem,2vw,1.05rem)', lineHeight: 1.65, color: 'var(--foreground)', maxWidth: '440px', margin: '0 auto 16px' }}>
           {result.recommendation}
         </p>
 
@@ -134,7 +135,7 @@ function TriageResult({ result, postInfo, onReset }) {
           <div key={label} className="card" style={{ padding: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
               <Icon size={13} style={{ color: accent }} aria-hidden="true" />
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--foreground)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
             </div>
             <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{value}</span>
           </div>
@@ -158,6 +159,8 @@ export default function MedicalPostScanPage() {
   const [triageResult, setTriageResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [freeTextInput, setFreeTextInput] = useState('');
+  const [isParsing, setIsParsing] = useState(false);
 
   const SYMPTOMS = [
     { label: 'Chest pain',             value: 'chest pain' },
@@ -181,7 +184,39 @@ export default function MedicalPostScanPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedSymptoms.length) { setError('Please select at least one symptom.'); return; }
+    
+    let finalSymptoms = [...selectedSymptoms];
+
+    // Layer 1: AI Parsing of free-text input
+    if (freeTextInput.trim() !== '') {
+      setIsParsing(true);
+      setError('');
+      try {
+        const parseRes = await fetch('/api/parse-symptoms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ freeTextInput: freeTextInput.trim() }),
+        });
+        if (!parseRes.ok) throw new Error('AI Parsing failed');
+        const parseData = await parseRes.json();
+        
+        if (parseData.tags && parseData.tags.length > 0) {
+          finalSymptoms = [...new Set([...finalSymptoms, ...parseData.tags])];
+          setSelectedSymptoms(finalSymptoms); // update UI to show what was selected
+        } else if (finalSymptoms.length === 0) {
+          setError("We couldn't clearly identify your symptoms. Please use the checkboxes instead.");
+          setIsParsing(false);
+          return;
+        }
+      } catch (err) {
+        setError("AI parsing is currently unavailable. Please use the checkboxes instead.");
+        setIsParsing(false);
+        return;
+      }
+      setIsParsing(false);
+    }
+
+    if (!finalSymptoms.length) { setError('Please select or describe at least one symptom.'); return; }
     setError('');
     setSubmitting(true);
     try {
@@ -218,7 +253,7 @@ export default function MedicalPostScanPage() {
             display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '16px',
           }}>
             <Info size={16} style={{ color: '#3b82f6', flexShrink: 0, marginTop: '2px' }} aria-hidden="true" />
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--foreground)', lineHeight: 1.5 }}>
               <strong style={{ color: '#60a5fa' }}>Demo only:</strong> This is a simulated prototype for the FIFA World Cup 2026 Smart Stadiums challenge. It does not provide real medical advice. In a real emergency, contact stadium medical staff or call <strong>911</strong> immediately.
             </p>
           </div>
@@ -232,7 +267,7 @@ export default function MedicalPostScanPage() {
             <AlertTriangle size={18} style={{ color: '#ef4444', flexShrink: 0 }} aria-hidden="true" />
             <p style={{ fontSize: '0.85rem', lineHeight: 1.4 }}>
               <strong style={{ color: '#f87171' }}>Life-threatening emergency?</strong>{' '}
-              <span style={{ color: 'var(--text-muted)' }}>Call <strong style={{ color: '#f8fafc' }}>911</strong> or press the red stadium emergency button immediately.</span>
+              <span style={{ color: 'var(--foreground)' }}>Call <strong style={{ color: '#f8fafc' }}>911</strong> or press the red stadium emergency button immediately.</span>
             </p>
           </div>
 
@@ -261,8 +296,8 @@ export default function MedicalPostScanPage() {
                   <h1 id="medical-page-heading" style={{ fontSize: 'clamp(1.3rem,3vw,1.65rem)', fontWeight: 800, marginBottom: '8px' }}>
                     Medical Assistance
                   </h1>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                    You&apos;ve scanned at <strong style={{ color: 'var(--text-primary)' }}>{postInfo?.name ?? 'Medical Post 1 — North Concourse'}</strong>.
+                  <p style={{ color: 'var(--foreground)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                    You&apos;ve scanned at <strong style={{ color: 'var(--foreground)' }}>{postInfo?.name ?? 'Medical Post 1 — North Concourse'}</strong>.
                     Complete the symptom check below for immediate guidance.
                   </p>
                 </div>
@@ -270,7 +305,7 @@ export default function MedicalPostScanPage() {
 
               {/* Medical post status row */}
               <section aria-labelledby="post-status-heading" style={{ marginBottom: '28px' }}>
-                <h2 id="post-status-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <h2 id="post-status-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--foreground)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   This Medical Post
                 </h2>
                 <div role="list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(155px, 1fr))', gap: '10px' }}>
@@ -283,9 +318,9 @@ export default function MedicalPostScanPage() {
                     <div key={label} role="listitem" className="card" style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Icon size={13} style={{ color: accent }} aria-hidden="true" />
-                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--foreground)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
                       </div>
-                      <span style={{ fontWeight: 700, fontSize: '0.88rem', color: label === 'Status' ? '#10b981' : 'var(--text-primary)' }}>{value}</span>
+                      <span style={{ fontWeight: 700, fontSize: '0.88rem', color: label === 'Status' ? '#10b981' : 'var(--foreground)' }}>{value}</span>
                     </div>
                   ))}
                 </div>
@@ -312,10 +347,36 @@ export default function MedicalPostScanPage() {
                           <Stethoscope size={24} style={{ color: '#f59e0b' }} aria-hidden="true" />
                         </div>
                         <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '6px' }}>Select your symptoms</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', maxWidth: '360px', margin: '0 auto' }}>
-                          Tap all that apply → instant severity assessment → nearest available medic.
+                        <p style={{ color: 'var(--foreground)', fontSize: '0.85rem', maxWidth: '360px', margin: '0 auto' }}>
+                          Tap all that apply or describe how you feel → instant severity assessment.
                         </p>
                       </div>
+
+                      {/* Natural Language Input */}
+                      <div style={{ marginBottom: '24px' }}>
+                        <label htmlFor="symptom-text" style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px' }}>
+                          Describe how you're feeling:
+                        </label>
+                        <textarea
+                          id="symptom-text"
+                          rows={3}
+                          value={freeTextInput}
+                          onChange={(e) => setFreeTextInput(e.target.value)}
+                          placeholder="e.g., My chest hurts and I feel dizzy..."
+                          style={{
+                            width: '100%', padding: '12px', borderRadius: '10px',
+                            border: '1px solid var(--border)', background: 'var(--background)',
+                            color: 'var(--foreground)', fontSize: '0.9rem', resize: 'vertical',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--foreground)', opacity: 0.8, display: 'flex', gap: '6px' }}>
+                          <ShieldCheck size={14} style={{ color: '#10b981' }} />
+                          <em>AI-assisted symptom parsing — final triage classification uses fixed medical logic, not AI judgment.</em>
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: 'center', marginBottom: '16px', fontSize: '0.85rem', color: 'var(--foreground)', fontWeight: 600 }}>OR SELECT MANUALLY</div>
 
                       <fieldset style={{ border: 'none', padding: 0, margin: '0 0 24px' }}>
                         <legend className="sr-only">Symptom checklist</legend>
@@ -328,7 +389,7 @@ export default function MedicalPostScanPage() {
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: '10px',
                                   cursor: 'pointer', padding: '12px 14px',
-                                  background: selected ? 'rgba(245,158,11,0.1)' : 'var(--bg-surface)',
+                                  background: selected ? 'rgba(245,158,11,0.1)' : 'var(--card)',
                                   border: `1px solid ${selected ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`,
                                   borderRadius: '10px',
                                   minHeight: '44px',
@@ -364,7 +425,7 @@ export default function MedicalPostScanPage() {
                           style={{ minHeight: '48px', minWidth: '180px', fontSize: '1rem' }}
                           aria-label="Submit symptoms for triage assessment"
                         >
-                          {submitting ? 'Processing...' : 'Submit Symptoms →'}
+                          {isParsing ? 'Parsing Symptoms...' : submitting ? 'Processing...' : 'Submit Symptoms →'}
                         </button>
                       </div>
                     </motion.form>
@@ -378,6 +439,7 @@ export default function MedicalPostScanPage() {
       </main>
 
       <AppFooter />
+      {scanData && <AskContextQR currentContext={{ ...scanData, postInfo: scanData.postInfo || null }} />}
     </div>
   );
 }

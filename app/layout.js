@@ -1,30 +1,39 @@
-import { Inter } from 'next/font/google';
-import '@/app/globals.css';
+import { Sora, Inter } from 'next/font/google';
+import './globals.css';
+import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
+import { ThemeProvider } from 'next-themes';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
+const sora = Sora({ 
+  subsets: ['latin'], 
+  variable: '--font-sora',
+  display: 'swap',
+});
+
+const inter = Inter({ 
+  subsets: ['latin'], 
+  variable: '--font-inter',
   display: 'swap',
 });
 
 export const metadata = {
-  title: 'ContextQR — Smart Stadium Assistant | FIFA World Cup 2026',
-  description:
-    'Adaptive QR-powered stadium assistant. Context-aware help for gate entry, seating, and medical assistance — built for FIFA World Cup 2026 Smart Stadiums.',
-  keywords: ['stadium', 'QR code', 'accessibility', 'FIFA', 'World Cup', 'smart stadium'],
-  authors: [{ name: 'ContextQR Team' }],
-  openGraph: {
-    title: 'ContextQR — Smart Stadium Assistant',
-    description: 'One QR code. Infinite context. Built for the stadium of the future.',
-    type: 'website',
-  },
+  title: "ContextQR | Smart Stadium Assistant",
+  description: "Dynamic, context-aware safety and accessibility for stadiums.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-hc="false" data-fontsize="normal">
-      <body className={inter.variable}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${sora.variable} ${inter.variable}`}>
+        <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <AppHeader />
+            <main style={{ flex: 1 }}>
+              {children}
+            </main>
+            <AppFooter />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

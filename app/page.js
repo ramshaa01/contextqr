@@ -34,26 +34,54 @@ export default function HomePage() {
 
       <main id="main-content" role="main" aria-label="ContextQR Zone Simulator">
 
-        {/* ── Hero Section ── */}
+        {/* ── Hero Section (Kinetic Modernism) ── */}
         <section
           aria-labelledby="hero-heading"
           style={{
-            background: 'linear-gradient(180deg, rgba(16,185,129,0.06) 0%, transparent 100%)',
+            position: 'relative',
+            minHeight: '80vh',
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
             borderBottom: '1px solid var(--border)',
-            padding: '80px 0 64px',
+            backgroundImage: 'var(--stadium-bg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
           }}
         >
-          <div className="container-app" style={{ textAlign: 'center' }}>
+          {/* Gradient Mesh Overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%)',
+            backdropFilter: 'blur(3px)',
+            backgroundColor: 'var(--background)',
+            opacity: 0.85
+          }} />
+
+          {/* Floating FIFA Ball */}
+          <div className="animate-float" style={{
+            position: 'absolute',
+            top: '10%',
+            right: '10%',
+            width: 'clamp(100px, 15vw, 180px)',
+            height: 'clamp(100px, 15vw, 180px)',
+            backgroundImage: 'url(/images/fifa-ball.png)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.8,
+            pointerEvents: 'none',
+          }} />
+
+          <div className="container-app animate-fade-in-scale" style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '100%' }}>
             {/* Event badge */}
             <div
               aria-label="FIFA World Cup 2026 Smart Stadiums Challenge"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px', background: 'var(--card)', padding: '6px 12px', borderRadius: '99px', border: '1px solid var(--border)' }}
             >
-              <span className="badge badge-success">
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)' }}>
                 🏆 FIFA World Cup 2026
-              </span>
-              <span className="badge badge-info">
-                Smart Stadiums Challenge
               </span>
             </div>
 
@@ -61,27 +89,23 @@ export default function HomePage() {
             <h1
               id="hero-heading"
               style={{
-                fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-                fontWeight: 900,
-                lineHeight: 1.1,
-                letterSpacing: '-0.03em',
-                marginBottom: '20px',
-                color: 'var(--text-primary)',
+                color: 'var(--foreground)',
+                marginBottom: '24px',
               }}
             >
-              One QR code.
-              <br />
-              <span className="gradient-text">Infinite context.</span>
+              Scan. <span style={{ color: 'var(--primary)' }}>Adapt.</span> Thrive.
             </h1>
 
             {/* Sub-heading */}
             <p
+              className="animate-fade-in-up"
               style={{
-                fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                color: 'var(--text-muted)',
-                maxWidth: '560px',
+                fontSize: 'clamp(1.1rem, 2vw, 1.25rem)',
+                color: 'var(--foreground)',
+                opacity: 0.8,
+                maxWidth: '600px',
                 margin: '0 auto 40px',
-                lineHeight: 1.7,
+                lineHeight: 1.6,
               }}
             >
               The same QR code gives you a different, personalised response
@@ -92,8 +116,8 @@ export default function HomePage() {
             {/* Feature pills */}
             <div
               role="list"
-              aria-label="Key features"
-              style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginBottom: '48px' }}
+              className="animate-fade-in-up"
+              style={{ animationDelay: '200ms', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginBottom: '48px' }}
             >
               {[
                 { icon: QrCode,      label: 'Zone-aware QR' },
@@ -103,18 +127,17 @@ export default function HomePage() {
                 <div
                   key={label}
                   role="listitem"
+                  className="glass"
                   style={{
                     display: 'flex', alignItems: 'center', gap: '8px',
-                    background: 'rgba(16,185,129,0.08)',
-                    border: '1px solid rgba(16,185,129,0.2)',
-                    padding: '8px 16px',
+                    padding: '10px 20px',
                     borderRadius: '99px',
-                    fontSize: '0.85rem',
-                    color: 'var(--accent)',
+                    fontSize: '0.9rem',
+                    color: 'var(--foreground)',
                     fontWeight: 600,
                   }}
                 >
-                  <Icon size={14} aria-hidden="true" />
+                  <Icon size={16} aria-hidden="true" style={{ color: 'var(--primary)' }} />
                   {label}
                 </div>
               ))}
@@ -123,10 +146,10 @@ export default function HomePage() {
             {/* Scroll cue */}
             <div
               aria-hidden="true"
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: 'var(--text-muted)', fontSize: '0.8rem' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: 'var(--foreground)', opacity: 0.6, fontSize: '0.85rem', fontWeight: 600 }}
             >
-              <span>Scan a zone to begin</span>
-              <ChevronDown size={20} style={{ animation: 'float 2s ease-in-out infinite' }} />
+              <span>Explore Zones</span>
+              <ChevronDown size={24} className="animate-float" />
             </div>
           </div>
         </section>
@@ -147,7 +170,7 @@ export default function HomePage() {
               >
                 Choose a zone to simulate scanning
               </h2>
-              <p style={{ color: 'var(--text-muted)', marginTop: '12px', maxWidth: '480px', margin: '12px auto 0' }}>
+              <p style={{ color: 'var(--foreground)', marginTop: '12px', maxWidth: '480px', margin: '12px auto 0' }}>
                 Each zone returns a different response — same QR code, different context.
               </p>
             </div>
@@ -202,7 +225,7 @@ export default function HomePage() {
         <section
           aria-labelledby="how-it-works-heading"
           style={{
-            background: 'var(--bg-surface)',
+            background: 'var(--card)',
             borderTop: '1px solid var(--border)',
             borderBottom: '1px solid var(--border)',
             padding: '64px 0',
@@ -274,7 +297,7 @@ export default function HomePage() {
                     </span>
                     <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>{title}</h3>
                   </div>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>{desc}</p>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--foreground)', lineHeight: 1.6 }}>{desc}</p>
                 </li>
               ))}
             </ol>

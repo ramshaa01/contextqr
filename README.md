@@ -44,6 +44,37 @@ Accessibility is not an afterthought; it is a core feature:
 - **Simulated Scanning**: For demo purposes, "scanning" is simulated via UI buttons on the landing page (though real QR codes are provided in the `/public/qr` folder).
 - **Medical Triage**: The symptom checker is a simulated demo and does not constitute real medical advice or connect to real emergency services.
 
+## Architecture
+
+ContextQR uses a modern Next.js 15 App Router architecture with a custom "Kinetic Modernism" aesthetic.
+
+### Core Deterministic Engines
+The core intelligence of ContextQR operates locally without relying on external services for safety-critical logic:
+1. **Decision Engine** (`lib/decisionEngine.js`): Deterministically computes routing, stall recommendations, and wait times based on the user's zone, phase of the match, and accessibility profile.
+2. **Triage Engine** (`lib/triageEngine.js`): Safely maps symptom keywords to predefined severity levels (Urgent, Moderate, Self-care) without hallucination risk.
+
+### GenAI Integration Layer
+We integrate the Google Gemini API (`@google/genai` using the `gemini-3-flash` free-tier model) as a non-critical enhancement layer wrapper around the core engines. **If Gemini is unavailable or times out, the app degrades gracefully to the static core engine output.**
+
+**Layer 1: Natural Language Symptom Parsing**
+Instead of manually checking boxes, users can type how they feel. Gemini extracts symptoms and maps them to the exact structured tags expected by the `triageEngine.js`. *Gemini never decides medical severity, it only maps input strings.*
+
+**Layer 2: Natural Language Response Generation**
+Instead of displaying robotic instructions, Gemini rewrites the `decisionEngine`'s structured output into a warm, concise, conversational sentence (e.g., "It's half-time! Feel free to grab a bite..."). 
+
+**Layer 3: Ask ContextQR Chat**
+A floating chat interface available on all scan pages. It receives the user's current context (location, crowd density, time) and answers questions using *only* that factual context, refusing to invent wait times or queue lengths.
+
+## Customizations
+You can customize the UI via CSS variables in `globals.css` (OKLCH).
+
+## Testing
+Run the vitest suite with:
+```bash
+npm run test
+```
+The test suite covers the rule-based logic (Triage, Decision Engine) and includes mock tests for the GenAI fallbacks to ensure the app remains functional even if AI APIs fail.
+
 ## 🚀 Local Setup Instructions
 
 ```bash

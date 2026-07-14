@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Scan, Sun, ZoomIn, ZoomOut, Menu, X, Wifi } from 'lucide-react';
+import { Scan, Sun, ZoomIn, ZoomOut, Menu, X, Wifi, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAccessibleMotion } from '@/lib/motion';
+import { useTheme } from 'next-themes';
 
 /**
  * AppHeader — global navigation header
@@ -17,6 +18,12 @@ export default function AppHeader() {
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [scrolled,    setScrolled]    = useState(false);
   const [isMobile,    setIsMobile]    = useState(false);
+  const [mounted,     setMounted]     = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Persist accessibility prefs to html attrs
   useEffect(() => {
@@ -74,11 +81,11 @@ export default function AppHeader() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: scrolled ? 'rgba(11,30,61,0.96)' : 'rgba(11,30,61,0.7)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(16,185,129,0.15)',
-        transition: 'background 0.3s ease, box-shadow 0.3s ease',
-        boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.3)' : 'none',
+        backgroundColor: scrolled ? 'var(--bg-glass-scrolled)' : 'var(--bg-glass-initial)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid var(--border)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: scrolled ? '0 4px 20px -5px rgba(0,0,0,0.1)' : 'none',
       }}
     >
       <div
@@ -110,6 +117,16 @@ export default function AppHeader() {
             <div role="group" aria-label="Accessibility controls" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <motion.button
                 {...motionProps}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Toggle theme"
+                title="Toggle Light/Dark Theme"
+                className="btn-ghost"
+                style={btnStyle}
+              >
+                {mounted && (theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />)}
+              </motion.button>
+              <motion.button
+                {...motionProps}
                 onClick={() => setHcMode(prev => !prev)}
                 aria-pressed={hcMode}
                 aria-label={`High contrast: ${hcMode ? 'on' : 'off'}`}
@@ -136,9 +153,9 @@ export default function AppHeader() {
             <div
               role="status"
               aria-label="System status: live"
-              style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-muted)', fontSize: '0.78rem', marginLeft: '8px' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--foreground)', fontSize: '0.78rem', marginLeft: '8px' }}
             >
-              <Wifi size={13} aria-hidden="true" style={{ color: 'var(--accent)' }} />
+              <Wifi size={13} aria-hidden="true" style={{ color: 'var(--primary)' }} />
               <span>Live</span>
             </div>
           </nav>
@@ -166,7 +183,7 @@ export default function AppHeader() {
           role="region"
           aria-label="Mobile accessibility controls"
           style={{
-            backgroundColor: 'var(--bg-surface)',
+            backgroundColor: 'var(--card)',
             borderTop: '1px solid var(--border)',
             padding: '12px 16px',
           }}
@@ -189,7 +206,7 @@ export default function AppHeader() {
               <ZoomIn size={16} aria-hidden="true" />
               Font Size: <strong>{fontSize}</strong>
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', color: 'var(--foreground)', fontSize: '0.8rem' }}>
               <Wifi size={13} style={{ color: 'var(--accent)' }} aria-hidden="true" />
               System: Live
             </div>

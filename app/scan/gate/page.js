@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AskContextQR from '@/components/AskContextQR';
 import { useAccessibleMotion } from '@/lib/motion';
 
 /* ── Mini-map: abstract SVG stadium diagram ─────────────────── */
@@ -88,7 +89,7 @@ function StadiumMiniMap({ highlightGate = 'north', isAccessible = false }) {
         <circle cx="100" cy={highlightGate === 'north' ? 24 : 136} r="7" fill="none" stroke={highlight} strokeWidth="1.5" opacity="0.5" />
       </svg>
 
-      <div style={{ display: 'flex', gap: '16px', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+      <div style={{ display: 'flex', gap: '16px', fontSize: '0.72rem', color: 'var(--foreground)' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: highlight, display: 'inline-block' }} />
           Your Gate
@@ -120,10 +121,10 @@ function NoScanFallback() {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 24px',
       }}>
-        <QrCode size={32} style={{ color: 'var(--text-muted)' }} />
+        <QrCode size={32} style={{ color: 'var(--foreground)' }} />
       </div>
       <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '12px' }}>No scan detected</h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
+      <p style={{ color: 'var(--foreground)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 32px' }}>
         This page responds to a QR code scan. Simulate one from the home page to see your personalised entry guidance.
       </p>
       <Link href="/" className="btn-primary" style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', textDecoration: 'none' }}>
@@ -138,10 +139,31 @@ function NoScanFallback() {
 export default function GateScanPage() {
   const [scanData, setScanData] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [geminiResponse, setGeminiResponse] = useState(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('scan-result-gate');
-    if (stored) setScanData(JSON.parse(stored));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setScanData(parsed);
+
+      // Layer 2: Natural Language Response Generation
+      fetch('/api/generate-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primary: parsed.primary,
+          secondary: parsed.secondary,
+          timeContext: parsed.timeContext,
+          zoneType: parsed.zoneType
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.text) setGeminiResponse(data.text);
+      })
+      .catch(err => console.error("Gemini generation failed, falling back to static", err));
+    }
     setLoaded(true);
   }, []);
 
@@ -195,7 +217,7 @@ export default function GateScanPage() {
                   <h1 id="gate-page-heading" style={{ fontSize: 'clamp(1.3rem,3vw,1.65rem)', fontWeight: 800, marginBottom: '8px' }}>
                     Gate Entry Assistance
                   </h1>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                  <p style={{ color: 'var(--foreground)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                     {scanData ? scanData.zoneData?.description : 'Loading your entry guidance...'}
                   </p>
                 </div>
@@ -203,7 +225,7 @@ export default function GateScanPage() {
 
               {/* Context indicators */}
               <section aria-labelledby="context-heading" style={{ marginBottom: '28px' }}>
-                <h2 id="context-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <h2 id="context-heading" style={{ fontSize: '0.75rem', fontWeight: 700, marginBottom: '14px', color: 'var(--foreground)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   Detected Context
                 </h2>
                 <div role="list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px' }}>
@@ -216,7 +238,7 @@ export default function GateScanPage() {
                     <div key={label} role="listitem" className="card" style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Icon size={14} style={{ color: ac }} aria-hidden="true" />
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--foreground)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
                       </div>
                       <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{value}</span>
                     </div>
@@ -240,9 +262,14 @@ export default function GateScanPage() {
                       </motion.div>
                     ) : (
                       <motion.div key="content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '14px', color: accent, lineHeight: 1.4 }}>
-                          {scanData.primary}
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '6px', color: accent, lineHeight: 1.4 }}>
+                          {geminiResponse || scanData.primary}
                         </h3>
+                        {geminiResponse && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--foreground)', opacity: 0.7, marginBottom: '14px', fontStyle: 'italic' }}>
+                            ✨ AI-generated summary
+                          </div>
+                        )}
 
                         {scanData.alerts?.length > 0 && (
                           <div role="alert" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '10px 14px', marginBottom: '14px' }}>
@@ -299,7 +326,7 @@ export default function GateScanPage() {
                   <h3 style={{ color: '#3b82f6', fontWeight: 700, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem' }}>
                     <Accessibility size={16} aria-hidden="true" /> Accessible Route — {scanData.accessibleRoute.estimatedTime} min estimated
                   </h3>
-                  <ol style={{ paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.7 }}>
+                  <ol style={{ paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--foreground)', lineHeight: 1.7 }}>
                     {scanData.accessibleRoute.steps?.map(s => (
                       <li key={s.step}>{s.instruction}</li>
                     ))}
@@ -311,7 +338,7 @@ export default function GateScanPage() {
               {scanData?.tips?.length > 0 && (
                 <div role="note" aria-label="Helpful tips" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px 20px' }}>
                   <p style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '8px' }}>💡 Tips</p>
-                  <ul style={{ paddingLeft: '18px', color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  <ul style={{ paddingLeft: '18px', color: 'var(--foreground)', fontSize: '0.85rem', lineHeight: 1.7 }}>
                     {scanData.tips.map((tip, i) => <li key={i}>{tip}</li>)}
                   </ul>
                 </div>
@@ -322,6 +349,7 @@ export default function GateScanPage() {
       </main>
 
       <AppFooter />
+      {scanData && <AskContextQR currentContext={scanData} />}
     </div>
   );
 }

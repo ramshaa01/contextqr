@@ -50,7 +50,6 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
   };
 
   const motionProps = useAccessibleMotion({
-    whileHover: { scale: 1.02, y: -4 },
     whileTap: { scale: 0.98 },
     transition: transitions.spring
   });
@@ -64,7 +63,7 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
       onKeyDown={handleKeyDown}
       aria-busy={loading}
       aria-label={`Simulate QR scan for ${title}. Press Enter or Space to activate.`}
-      className={`card ${delay}`}
+      className={`glass card-hover ${delay}`}
       style={{
         padding: '32px 28px',
         cursor: loading ? 'wait' : 'pointer',
@@ -73,7 +72,8 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
-        opacity: loading ? 0.7 : 1
+        opacity: loading ? 0.7 : 1,
+        borderRadius: 'var(--radius-xl)'
       }}
     >
       {/* Background glow */}
@@ -110,10 +110,10 @@ export default function ZoneCard({ zone, title, description, icon: Icon, accent,
 
       {/* Content */}
       <div style={{ flex: 1 }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: 'var(--foreground)' }}>
           {title}
         </h2>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '0.9rem', color: 'var(--foreground)', lineHeight: 1.6 }}>
           {description}
         </p>
       </div>
