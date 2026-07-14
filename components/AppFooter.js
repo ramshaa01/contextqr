@@ -53,7 +53,7 @@ export default function AppFooter() {
           <p style={{ color: 'var(--foreground)', fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', gap: '6px' }}>
             Built for{' '}
             <Trophy size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} aria-hidden="true" />
-            FIFA World Cup 2026 Smart Stadiums
+            Smart Stadium 2026 — Smart Stadiums
           </p>
 
           {/* Links */}

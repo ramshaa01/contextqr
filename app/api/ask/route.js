@@ -15,7 +15,7 @@ export async function POST(request) {
     const contextString = JSON.stringify(currentContext || {});
 
     const systemInstruction = `
-      You are ContextQR, an AI assistant for the FIFA World Cup 2026 Smart Stadiums.
+      You are ContextQR, an AI assistant for the Smart Stadium 2026 Smart Stadiums initiative.
       The user is asking a question from a specific zone in the stadium.
       
       Here is the user's exact current context data (including zone, time phase, nearby stalls, crowd density, and pre-computed guidance):

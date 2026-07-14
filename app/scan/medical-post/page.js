@@ -254,7 +254,7 @@ export default function MedicalPostScanPage() {
           }}>
             <Info size={16} style={{ color: '#3b82f6', flexShrink: 0, marginTop: '2px' }} aria-hidden="true" />
             <p style={{ fontSize: '0.8rem', color: 'var(--foreground)', lineHeight: 1.5 }}>
-              <strong style={{ color: '#60a5fa' }}>Demo only:</strong> This is a simulated prototype for the FIFA World Cup 2026 Smart Stadiums challenge. It does not provide real medical advice. In a real emergency, contact stadium medical staff or call <strong>911</strong> immediately.
+              <strong style={{ color: '#60a5fa' }}>Demo only:</strong> This is a simulated prototype for the Smart Stadium 2026 challenge. It does not provide real medical advice. In a real emergency, contact stadium medical staff or call <strong>911</strong> immediately.
             </p>
           </div>
 
