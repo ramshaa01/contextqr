@@ -90,8 +90,6 @@ npm run test
 The app will be available at `http://localhost:3000`.
 
 ## 🌐 Live Demo
-The application is deployed live on Vercel at: **[Insert Vercel Link Here]**
+The application is deployed live on Vercel at: **https://contextqr.vercel.app**
 
-*(Screenshot placeholders)*
-![Landing Page](/screenshots/landing.png)
-![Medical Triage](/screenshots/medical.png)
+
