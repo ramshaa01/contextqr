@@ -5,7 +5,6 @@ import AppFooter from '@/components/AppFooter';
 import ZoneCard from '@/components/ZoneCard';
 import { DoorOpen, Armchair, Stethoscope, QrCode, Cpu, Accessibility, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAccessibleMotion } from '@/lib/motion';
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -26,7 +25,6 @@ const itemVariant = {
  * This is the entry point of the ContextQR experience.
  */
 export default function HomePage() {
-  const motionProps = useAccessibleMotion({});
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
